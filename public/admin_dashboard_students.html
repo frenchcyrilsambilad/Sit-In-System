@@ -1,0 +1,44 @@
+﻿      <div class="admin-full-panel">
+        <div class="section-inner">
+
+          <div class="students-header">
+            <div class="students-title-block">
+              <div class="students-title"><i class="fa fa-users" style="margin-right:8px;"></i>Students
+              </div>
+              <div class="students-subtitle">Find, review, and manage registered student accounts</div>
+            </div>
+            <div class="students-header-btns">
+              <span class="students-count-badge" id="st-count-badge">0 students</span>
+              <button class="btn-add-student" onclick="openAddStudentModal()">
+                <i class="fa fa-user-plus"></i> Add Student
+              </button>
+              <button class="btn-reset-sessions" onclick="resetAllSessions()">
+                <i class="fa fa-rotate"></i> Reset Sessions
+              </button>
+            </div>
+          </div>
+
+          <div class="students-toolbar">
+            <div class="students-toolbar-left">
+              <i class="fa fa-table-list"></i>
+              <span>Rows</span>
+              <select id="st-per-page" onchange="stPage=1;renderStudents()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div class="students-search-wrap">
+              <i class="fa fa-search"></i>
+              <input type="text" id="st-search" placeholder="Search by name, ID, course..."
+                oninput="stPage=1;renderStudents()" />
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <div id="students-table-wrap"></div>
+          </div>
+          <div class="dt-pagination" id="st-pagination"></div>
+
+        </div>
+      </div>

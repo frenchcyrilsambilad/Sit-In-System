@@ -1,0 +1,428 @@
+<div class="leader-admin-page">
+  <div class="leader-admin-hero">
+    <div>
+      <div class="leader-admin-kicker"><i class="fa fa-ranking-star"></i> Performance ranking</div>
+      <h1>Leaderboard</h1>
+      <p>Review student XP, session consistency, and lab time from one focused command view.</p>
+    </div>
+    <div class="leader-admin-actions">
+      <button class="leader-secondary-btn" onclick="resetSessions()"><i class="fa fa-rotate-left"></i> Reset Sessions</button>
+    </div>
+  </div>
+
+  <div class="leader-rule-grid">
+    <div class="leader-rule-card"><i class="fa fa-check"></i><span>Completion</span><strong>+1 XP</strong></div>
+    <div class="leader-rule-card"><i class="fa fa-clock"></i><span>Duration</span><strong>+1 / 30 min</strong></div>
+    <div class="leader-rule-card"><i class="fa fa-bolt"></i><span>Long session</span><strong>+1 bonus</strong></div>
+    <div class="leader-rule-card"><i class="fa fa-gift"></i><span>Manual reward</span><strong>Admin XP</strong></div>
+  </div>
+
+  <div class="leader-panel">
+    <div class="leader-panel-header">
+      <div>
+        <strong><i class="fa fa-users"></i> Top Students by XP</strong>
+        <span>Sorted by total points, sit-ins, then total duration.</span>
+      </div>
+    </div>
+
+    <div class="leader-table-wrap">
+      <table class="leader-table" id="admin-leaderboard-table">
+        <thead>
+          <tr>
+            <th style="width:72px;">Rank</th>
+            <th>Student</th>
+            <th>Course</th>
+            <th>Sit-ins</th>
+            <th>Total Hours</th>
+            <th>Avg Session</th>
+            <th>Points</th>
+            <th style="text-align:right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-leaderboard-body">
+          <tr><td colspan="8" class="leader-empty"><i class="fa fa-spinner fa-spin"></i> Loading leaderboard...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- AWARD POINTS MODAL -->
+<div id="award-points-modal" class="modal-overlay" style="display:none; z-index:9999;">
+  <div class="modal-prem-box">
+    <div class="modal-prem-header">
+      <div class="modal-prem-title"><i class="fa fa-gift" style="margin-right:8px; color:#f59e0b;"></i>Award Points</div>
+      <button class="close-modal-btn" onclick="closeAwardModal()" style="color:#fff;"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-prem-body">
+      <input type="hidden" id="award-idnum" />
+      <div class="award-student-card">
+        <img id="award-pic" src="static/temppfp.jpg" />
+        <div>
+          <div id="award-name">Student Name</div>
+          <span id="award-course">BSIT</span>
+        </div>
+      </div>
+
+      <div class="mprem-grid">
+        <div class="mprem-fg full">
+          <label>Points to Award *</label>
+          <input type="number" id="award-pts-val" min="1" max="100" placeholder="e.g. 5" />
+        </div>
+        <div class="mprem-fg full">
+          <label>Reason / Note *</label>
+          <input type="text" id="award-reason" placeholder="e.g. Lab assistant duty" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-prem-footer">
+      <button class="btn-mprem-cancel" onclick="closeAwardModal()">Cancel</button>
+      <button class="btn-mprem-save" onclick="submitAwardPoints()"><i class="fa fa-check" style="margin-right:5px;"></i>Award Points</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .leader-admin-page {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 22px;
+    background: linear-gradient(180deg, #faf9ff 0%, #f3effb 100%);
+  }
+
+  .leader-admin-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+
+  .leader-admin-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--admin-muted);
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  .leader-admin-hero h1 {
+    margin: 0;
+    color: var(--admin-text);
+    font-size: clamp(1.9rem, 3vw, 3rem);
+    font-weight: 1000;
+    letter-spacing: -.035em;
+    line-height: 1;
+  }
+
+  .leader-admin-hero p {
+    max-width: 650px;
+    margin: 10px 0 0;
+    color: var(--admin-muted);
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.55;
+  }
+
+  .leader-admin-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .leader-secondary-btn,
+  .leader-primary-btn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 11px;
+    padding: 0 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 950;
+    cursor: pointer;
+  }
+
+  .leader-secondary-btn {
+    border: 1px solid #ded2f4;
+    background: #fff;
+    color: var(--admin-purple);
+  }
+
+  .leader-primary-btn {
+    border: 0;
+    background: var(--admin-purple);
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(52, 16, 112, .16);
+  }
+
+  .leader-rule-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .leader-rule-card {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    border: 1px solid #e5dcfb;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(32, 17, 63, .06);
+  }
+
+  .leader-rule-card i {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 40px;
+    border-radius: 13px;
+    background: #f3edff;
+    color: var(--admin-purple);
+  }
+
+  .leader-rule-card span {
+    display: block;
+    color: var(--admin-muted);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .leader-rule-card strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--admin-text);
+    font-size: 16px;
+    font-weight: 1000;
+  }
+
+  .leader-panel {
+    border: 1px solid #e5dcfb;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(32, 17, 63, .06);
+    overflow: hidden;
+  }
+
+  .leader-panel-header {
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee6fb;
+    background: #fff;
+  }
+
+  .leader-panel-header strong {
+    display: block;
+    color: var(--admin-text);
+    font-size: 16px;
+    font-weight: 1000;
+  }
+
+  .leader-panel-header span {
+    display: block;
+    margin-top: 4px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .leader-table-wrap {
+    overflow: auto;
+  }
+
+  .leader-table {
+    width: 100%;
+    min-width: 920px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .leader-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 13px 16px;
+    border-bottom: 1px solid #e5dcfb;
+    background: #faf7ff;
+    color: #5c3a91;
+    font-size: 11px;
+    font-weight: 1000;
+    letter-spacing: .05em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .leader-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1eafb;
+    color: var(--admin-text);
+    font-size: 13px;
+    font-weight: 800;
+    vertical-align: middle;
+  }
+
+  .leader-table tbody tr:hover {
+    background: #fcfaff;
+    box-shadow: inset 4px 0 0 var(--admin-gold);
+  }
+
+  .leader-rank {
+    width: 42px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5dcfb;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--admin-purple);
+    font-weight: 1000;
+  }
+
+  .leader-rank.top {
+    border-color: rgba(245, 166, 35, .48);
+    background: #fffbeb;
+    color: #92400e;
+  }
+
+  .leader-student {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 220px;
+  }
+
+  .leader-student img {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid #e5dcfb;
+  }
+
+  .leader-name {
+    color: var(--admin-text);
+    font-size: 14px;
+    font-weight: 1000;
+  }
+
+  .leader-id,
+  .leader-sub {
+    margin-top: 3px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .leader-xp {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #047857;
+    font-weight: 1000;
+  }
+
+  .leader-breakdown {
+    margin-top: 5px;
+    color: var(--admin-muted);
+    font-size: 11px;
+    font-weight: 750;
+  }
+
+  .leader-empty {
+    padding: 44px !important;
+    color: var(--admin-muted) !important;
+    text-align: center;
+  }
+
+  .btn-pts {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--admin-purple);
+    color: #fff;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(52, 16, 112, .14);
+  }
+
+  .btn-pts:hover {
+    background: var(--admin-purple-2);
+    transform: translateY(-1px);
+  }
+
+  .award-student-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 18px;
+    padding: 14px;
+    border: 1px solid #e5dcfb;
+    border-radius: 13px;
+    background: #fbf9ff;
+  }
+
+  .award-student-card img {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    object-fit: cover;
+  }
+
+  #award-name {
+    color: var(--admin-text);
+    font-size: 1rem;
+    font-weight: 1000;
+  }
+
+  #award-course {
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  @media (max-width: 1000px) {
+    .leader-admin-hero,
+    .leader-rule-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .leader-admin-actions {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .leader-admin-page {
+      padding: 14px;
+    }
+  }
+</style>

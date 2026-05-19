@@ -1,0 +1,1730 @@
+<div class="labsoft-admin-page">
+  <div class="labsoft-dashboard">
+    <section class="labsoft-card-shell labsoft-register-card">
+      <div class="labsoft-section-title">
+        <span class="labsoft-title-icon"><i class="fa fa-cloud-arrow-up"></i></span>
+        <div>
+          <h2>Upload / Register Software</h2>
+          <p>Upload an installer or documentation to register a new software in the lab system.</p>
+        </div>
+      </div>
+
+      <div class="labsoft-panel-body">
+        <input type="file" id="labsoft-file-input" class="labsoft-file-input" accept=".zip,.exe,.msi,.apk,.pdf,.doc,.docx" onchange="handleLabSoftwareFilePick(event)" />
+        <div id="labsoft-dropzone" class="labsoft-dropzone" role="button" tabindex="0" onclick="document.getElementById('labsoft-file-input').click()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('labsoft-file-input').click();}" ondragover="handleLabSoftwareDragOver(event)" ondragleave="handleLabSoftwareDragLeave(event)" ondrop="handleLabSoftwareDrop(event)">
+          <span class="labsoft-drop-icon"><i class="fa fa-cloud-arrow-up"></i></span>
+          <span class="labsoft-drop-copy">
+            <strong id="labsoft-drop-title">Drag &amp; drop installer or document here</strong>
+            <span id="labsoft-drop-subtitle">or click to browse your files</span>
+          </span>
+          <span class="labsoft-browse-btn"><i class="fa fa-folder-open"></i> Browse Files</span>
+          <span id="labsoft-file-chip" class="labsoft-file-chip"><i class="fa fa-file-circle-check"></i> No file selected</span>
+        </div>
+
+        <div class="labsoft-accept-block">
+          <span class="labsoft-accept-label">Accepted file types</span>
+          <div class="labsoft-accept-row" aria-label="Supported file types">
+            <span>.zip</span>
+            <span>.exe</span>
+            <span>.msi</span>
+            <span>.apk</span>
+            <span>.pdf</span>
+            <span>.doc</span>
+            <span>.docx</span>
+          </div>
+        </div>
+
+        <div class="labsoft-form-grid">
+          <label class="labsoft-field labsoft-field-full">
+            <span><i class="fa fa-file-lines"></i> Software / File Name</span>
+            <input type="text" id="labsoft-quick-name" placeholder="e.g. Visual Studio Code" />
+          </label>
+          <label class="labsoft-field">
+            <span><i class="fa fa-tag"></i> Version</span>
+            <input type="text" id="labsoft-quick-version" placeholder="e.g. 1.88 or 2024" />
+          </label>
+          <label class="labsoft-field">
+            <span><i class="fa fa-table-cells-large"></i> Category</span>
+            <select id="labsoft-quick-category"></select>
+          </label>
+          <label class="labsoft-field labsoft-field-full">
+            <span><i class="fa fa-desktop"></i> Laboratory</span>
+            <select id="labsoft-quick-lab"></select>
+          </label>
+        </div>
+
+        <button class="labsoft-submit-btn" onclick="saveLabSoftwareQuick()"><i class="fa fa-circle-plus"></i> Register Software</button>
+      </div>
+    </section>
+
+    <div class="labsoft-side-stack">
+      <section class="labsoft-card-shell labsoft-list-card">
+        <div class="labsoft-section-title labsoft-title-row">
+          <span class="labsoft-title-icon"><i class="fa fa-layer-group"></i></span>
+          <div>
+            <h2>Registered Software</h2>
+            <p>Manage and view all software registered in the system.</p>
+          </div>
+          <div class="labsoft-mini-search">
+            <i class="fa fa-magnifying-glass"></i>
+            <input type="text" id="labsoft-admin-search" placeholder="Search software..." oninput="renderLabSoftwareAdmin()" />
+          </div>
+        </div>
+        <div id="labsoft-recent-list" class="labsoft-recent-list">
+          <div class="labsoft-mini-empty">Loading software...</div>
+        </div>
+      </section>
+
+      <section class="labsoft-card-shell labsoft-overview-panel">
+        <div class="labsoft-section-title">
+          <span class="labsoft-title-icon"><i class="fa fa-desktop"></i></span>
+          <div>
+            <h2>Lab Software Overview</h2>
+            <p>Summary of registered software across all laboratories.</p>
+          </div>
+          <span id="labsoft-status-summary" class="labsoft-status-pill">Loading catalog...</span>
+        </div>
+        <div id="labsoft-overview-grid" class="labsoft-overview-grid"></div>
+      </section>
+    </div>
+  </div>
+
+  <div class="labsoft-directory-head">
+    <div>
+      <h2>Per-Lab Directory</h2>
+      <p>Review each lab, manage installed applications, and control student visibility.</p>
+    </div>
+    <div class="labsoft-category-row" id="labsoft-admin-category-row"></div>
+  </div>
+
+  <div id="labsoft-admin-list" class="labsoft-admin-list">
+    <div class="admin-empty-state">
+      <span class="empty-state-icon"><i class="fa fa-spinner fa-spin"></i></span>
+      <strong>Loading software catalog</strong>
+    </div>
+  </div>
+</div>
+
+<div id="labsoft-modal" class="modal-overlay" style="display:none;">
+  <div class="modal-prem-box">
+    <div class="modal-prem-header">
+      <div class="modal-prem-title"><i class="fa fa-plus" style="margin-right:8px;"></i>Add Lab Software</div>
+      <button class="close-modal-btn" onclick="closeLabSoftwareForm()" style="color:#fff;"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="modal-prem-body">
+      <div class="mprem-grid">
+        <div class="mprem-fg">
+          <label>Laboratory</label>
+          <select id="labsoft-form-lab"></select>
+        </div>
+        <div class="mprem-fg">
+          <label>Category</label>
+          <select id="labsoft-form-category"></select>
+        </div>
+        <div class="mprem-fg full">
+          <label>Software Name</label>
+          <input type="text" id="labsoft-form-name" placeholder="e.g. Visual Studio Code" />
+        </div>
+        <div class="mprem-fg full">
+          <label>Version</label>
+          <input type="text" id="labsoft-form-version" placeholder="e.g. 1.91 or 2024" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-prem-footer">
+      <button class="btn-mprem-cancel" onclick="closeLabSoftwareForm()">Cancel</button>
+      <button class="btn-mprem-save" onclick="saveLabSoftware()"><i class="fa fa-floppy-disk" style="margin-right:5px;"></i>Save</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .labsoft-admin-page {
+    --labsoft-bg: #f5f0ff;
+    --labsoft-card: #ffffff;
+    --labsoft-purple: #24104f;
+    --labsoft-purple-2: #6f42d9;
+    --labsoft-purple-3: #8f5ce8;
+    --labsoft-lavender: #f7f2ff;
+    --labsoft-lavender-2: #efe7ff;
+    --labsoft-gold: #e7ae22;
+    --labsoft-gold-2: #f8c84f;
+    --labsoft-text: #211044;
+    --labsoft-muted: #756992;
+    --labsoft-line: #e7ddf6;
+    --labsoft-danger: #dc2626;
+    --labsoft-radius-lg: 24px;
+    --labsoft-radius-md: 18px;
+    --labsoft-radius-sm: 12px;
+    --labsoft-shadow: 0 22px 54px rgba(70, 40, 120, .12);
+    --labsoft-shadow-soft: 0 12px 26px rgba(70, 40, 120, .08);
+    min-height: 100%;
+    overflow: auto;
+    padding: 26px;
+    background:
+      radial-gradient(circle at 16% 8%, rgba(143, 92, 232, .11), transparent 28%),
+      linear-gradient(180deg, #fbf9ff 0%, var(--labsoft-bg) 100%);
+    color: var(--labsoft-text);
+  }
+
+  .labsoft-admin-page,
+  .labsoft-admin-page * {
+    box-sizing: border-box;
+  }
+
+  .labsoft-dashboard {
+    display: grid;
+    grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
+    gap: 24px;
+    max-width: 1680px;
+    margin: 0 auto 22px;
+    align-items: start;
+  }
+
+  .labsoft-card-shell {
+    border: 1px solid rgba(231, 221, 246, .95);
+    border-radius: var(--labsoft-radius-lg);
+    background: rgba(255, 255, 255, .92);
+    box-shadow: var(--labsoft-shadow);
+  }
+
+  .labsoft-register-card,
+  .labsoft-list-card,
+  .labsoft-overview-panel {
+    padding: 24px;
+  }
+
+  .labsoft-register-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .labsoft-side-stack {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 20px;
+    align-content: start;
+    min-width: 0;
+  }
+
+  .labsoft-section-title {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+
+  .labsoft-title-row {
+    grid-template-columns: 48px minmax(0, 1fr) minmax(240px, 340px);
+  }
+
+  .labsoft-title-icon {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, var(--labsoft-purple-3), var(--labsoft-purple-2));
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(111, 66, 217, .22);
+  }
+
+  .labsoft-title-icon i {
+    color: #f7d36e;
+    font-size: 19px;
+  }
+
+  .labsoft-section-title h2 {
+    margin: 0;
+    color: var(--labsoft-purple);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+
+  .labsoft-section-title p {
+    margin: 7px 0 0;
+    color: var(--labsoft-muted);
+    font-size: 13.5px;
+    font-weight: 650;
+    line-height: 1.5;
+  }
+
+  .labsoft-panel-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .labsoft-file-input {
+    display: none;
+  }
+
+  .labsoft-dropzone {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 2px dashed #c6a9f7;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fbf8ff 0%, #f4edff 100%);
+    color: var(--labsoft-purple);
+    text-align: center;
+    padding: 24px;
+    cursor: pointer;
+    transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
+  }
+
+  .labsoft-dropzone:hover,
+  .labsoft-dropzone:focus-visible,
+  .labsoft-dropzone.dragging {
+    border-color: var(--labsoft-purple-3);
+    background: #f8f3ff;
+    box-shadow: 0 16px 34px rgba(111, 66, 217, .11);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .labsoft-drop-icon {
+    width: 72px;
+    height: 72px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--labsoft-purple-3), var(--labsoft-purple-2));
+    color: #fff;
+    font-size: 27px;
+    box-shadow: 0 16px 28px rgba(111, 66, 217, .23);
+  }
+
+  .labsoft-drop-copy strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .labsoft-drop-copy span {
+    display: block;
+    margin-top: 5px;
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 650;
+  }
+
+  .labsoft-browse-btn {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #d9caf5;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--labsoft-purple-2);
+    padding: 0 20px;
+    font-size: 13px;
+    font-weight: 850;
+    box-shadow: var(--labsoft-shadow-soft);
+  }
+
+  .labsoft-file-chip {
+    max-width: 100%;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 999px;
+    background: #efe7ff;
+    color: var(--labsoft-muted);
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 850;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .labsoft-file-chip.has-file {
+    background: #fff3ce;
+    color: #8a5a00;
+  }
+
+  .labsoft-accept-block {
+    margin-top: 20px;
+  }
+
+  .labsoft-accept-label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .labsoft-accept-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .labsoft-accept-row span {
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #e2d6f7;
+    border-radius: 999px;
+    background: var(--labsoft-lavender);
+    color: var(--labsoft-purple-2);
+    padding: 0 13px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .labsoft-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 16px;
+    margin-top: 22px;
+  }
+
+  .labsoft-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .labsoft-field-full {
+    grid-column: 1 / -1;
+  }
+
+  .labsoft-field span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--labsoft-purple);
+    font-size: 12.5px;
+    font-weight: 900;
+  }
+
+  .labsoft-field span i {
+    width: 16px;
+    color: var(--labsoft-purple-2);
+    text-align: center;
+  }
+
+  .labsoft-field input,
+  .labsoft-field select {
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid #dcd3e9;
+    border-radius: var(--labsoft-radius-sm);
+    background: #fff;
+    color: var(--labsoft-text);
+    padding: 0 15px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 750;
+    outline: none;
+    box-shadow: 0 1px 0 rgba(36, 16, 79, .03);
+    transition: border-color .16s ease, box-shadow .16s ease;
+  }
+
+  .labsoft-field input::placeholder {
+    color: #968caf;
+  }
+
+  .labsoft-field input:focus,
+  .labsoft-field select:focus {
+    border-color: var(--labsoft-purple-3);
+    box-shadow: 0 0 0 4px rgba(143, 92, 232, .14);
+  }
+
+  .labsoft-submit-btn {
+    width: 100%;
+    min-height: 54px;
+    margin-top: 24px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f9c94f 0%, var(--labsoft-gold) 48%, #d79a0f 100%);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(215, 154, 15, .24);
+    transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+
+  .labsoft-submit-btn:hover,
+  .labsoft-submit-btn:focus-visible {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(215, 154, 15, .3);
+    outline: none;
+  }
+
+  .labsoft-mini-search {
+    position: relative;
+    align-self: start;
+  }
+
+  .labsoft-mini-search i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7d7198;
+    font-size: 15px;
+  }
+
+  .labsoft-mini-search input {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #d7cde7;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--labsoft-text);
+    padding: 0 16px 0 46px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 750;
+    outline: none;
+    transition: border-color .16s ease, box-shadow .16s ease;
+  }
+
+  .labsoft-mini-search input:focus {
+    border-color: var(--labsoft-purple-3);
+    box-shadow: 0 0 0 4px rgba(143, 92, 232, .13);
+  }
+
+  .labsoft-recent-list {
+    display: grid;
+    gap: 14px;
+    max-height: 365px;
+    overflow: auto;
+    padding: 2px 6px 2px 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--labsoft-purple-3) #efe7ff;
+  }
+
+  .labsoft-recent-list::-webkit-scrollbar,
+  .labsoft-admin-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .labsoft-recent-list::-webkit-scrollbar-thumb,
+  .labsoft-admin-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--labsoft-purple-3);
+  }
+
+  .labsoft-recent-list::-webkit-scrollbar-track,
+  .labsoft-admin-list::-webkit-scrollbar-track {
+    background: #efe7ff;
+  }
+
+  .labsoft-recent-item {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    min-height: 86px;
+    padding: 14px;
+    border: 1px solid #ebe2f7;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--labsoft-shadow-soft);
+  }
+
+  .labsoft-card-icon {
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 50px;
+    border-radius: 14px;
+    font-size: 18px;
+  }
+
+  .labsoft-recent-info,
+  .labsoft-card-info {
+    min-width: 0;
+  }
+
+  .labsoft-recent-info strong,
+  .labsoft-card-info strong {
+    display: block;
+    overflow: hidden;
+    color: var(--labsoft-purple);
+    font-size: 16px;
+    font-weight: 950;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .labsoft-recent-info span,
+  .labsoft-card-info span {
+    display: block;
+    margin-top: 6px;
+    overflow: hidden;
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .labsoft-delete-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fff1f2;
+    color: var(--labsoft-danger);
+    cursor: pointer;
+    transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+  }
+
+  .labsoft-row-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .labsoft-action-btn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #ded2f4;
+    border-radius: 11px;
+    background: #fff;
+    color: var(--labsoft-purple-2);
+    cursor: pointer;
+    transition: transform .16s ease, background .16s ease, border-color .16s ease, box-shadow .16s ease;
+  }
+
+  .labsoft-action-btn:hover,
+  .labsoft-action-btn:focus-visible {
+    border-color: #c8aef5;
+    background: var(--labsoft-lavender);
+    box-shadow: 0 8px 18px rgba(111, 66, 217, .12);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .labsoft-detail-summary {
+    border: 1px solid #e7ddf6;
+    border-radius: 14px;
+    background: #fbf9ff;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+
+  .labsoft-detail-summary strong {
+    display: block;
+    color: var(--labsoft-purple);
+    font-size: 18px;
+    font-weight: 950;
+  }
+
+  .labsoft-detail-summary span {
+    display: block;
+    margin-top: 5px;
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 750;
+  }
+
+  .labsoft-detail-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .labsoft-detail-row {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #eee6fb;
+    border-radius: 12px;
+    background: #fff;
+    padding: 10px 12px;
+  }
+
+  .labsoft-detail-row span {
+    color: var(--labsoft-muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .labsoft-detail-row strong {
+    min-width: 0;
+    color: var(--labsoft-text);
+    font-size: 14px;
+    font-weight: 850;
+    overflow-wrap: anywhere;
+  }
+
+  .labsoft-delete-btn:hover,
+  .labsoft-delete-btn:focus-visible {
+    background: #ffe4e6;
+    box-shadow: 0 8px 18px rgba(220, 38, 38, .13);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .labsoft-mini-empty {
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+    border: 1px dashed #d8c8f2;
+    border-radius: 16px;
+    background: var(--labsoft-lavender);
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .labsoft-status-pill {
+    justify-self: end;
+    align-self: center;
+    border: 1px solid #e8d595;
+    border-radius: 999px;
+    background: #fff8df;
+    color: #8a5a00;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .labsoft-overview-panel .labsoft-section-title {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+  }
+
+  .labsoft-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 16px;
+  }
+
+  .labsoft-overview-card {
+    min-height: 116px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 46px;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #e8ddf7;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #fff 0%, #fbf8ff 100%);
+    padding: 16px;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: var(--labsoft-shadow-soft);
+    transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+  }
+
+  .labsoft-overview-card:hover,
+  .labsoft-overview-card:focus-visible {
+    border-color: #c8aef5;
+    box-shadow: 0 16px 30px rgba(111, 66, 217, .13);
+    transform: translateY(-2px);
+    outline: none;
+  }
+
+  .labsoft-overview-copy strong {
+    display: block;
+    color: var(--labsoft-purple-2);
+    font-size: 14px;
+    font-weight: 950;
+  }
+
+  .labsoft-overview-copy b {
+    display: block;
+    margin-top: 8px;
+    color: var(--labsoft-purple);
+    font-size: 30px;
+    line-height: 1;
+  }
+
+  .labsoft-overview-copy span {
+    display: block;
+    margin-top: 5px;
+    color: var(--labsoft-muted);
+    font-size: 11px;
+    font-weight: 950;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+
+  .labsoft-overview-icon {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #efe5ff;
+    color: var(--labsoft-purple-2);
+    font-size: 17px;
+  }
+
+  .labsoft-directory-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: end;
+    max-width: 1680px;
+    margin: 8px auto 14px;
+  }
+
+  .labsoft-directory-head h2 {
+    margin: 0;
+    color: var(--labsoft-purple);
+    font-size: 19px;
+    font-weight: 950;
+  }
+
+  .labsoft-directory-head p {
+    margin: 5px 0 0;
+    color: var(--labsoft-muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .labsoft-category-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .labsoft-chip {
+    min-height: 34px;
+    border: 1px solid #ded2f4;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--labsoft-purple-2);
+    padding: 0 13px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .labsoft-chip.active {
+    border-color: var(--labsoft-purple-2);
+    background: var(--labsoft-purple-2);
+    color: #fff;
+  }
+
+  .labsoft-admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 1680px;
+    margin: 0 auto;
+  }
+
+  .labsoft-lab-section {
+    border: 1px solid #e7ddf6;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: var(--labsoft-shadow-soft);
+    overflow: hidden;
+  }
+
+  .labsoft-lab-head {
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 16px 20px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .labsoft-lab-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .labsoft-lab-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--labsoft-purple-3), var(--labsoft-purple-2));
+    color: #fff;
+  }
+
+  .labsoft-lab-title strong {
+    display: block;
+    color: var(--labsoft-purple);
+    font-size: 15px;
+    font-weight: 950;
+  }
+
+  .labsoft-lab-title span {
+    display: block;
+    margin-top: 3px;
+    color: var(--labsoft-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .labsoft-lab-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--labsoft-muted);
+  }
+
+  .labsoft-publish {
+    min-height: 34px;
+    border: 1px solid #c7e9d2;
+    border-radius: 999px;
+    background: #ecfdf3;
+    color: #15803d;
+    padding: 0 13px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .labsoft-publish.hidden {
+    border-color: #fecaca;
+    background: #fff1f2;
+    color: #dc2626;
+  }
+
+  .labsoft-lab-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0 20px 20px;
+  }
+
+  .labsoft-lab-section.collapsed .labsoft-lab-body {
+    display: none;
+  }
+
+  .labsoft-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #eee6fb;
+    border-radius: 16px;
+    background: #fbf9ff;
+  }
+
+  @media (max-width: 1180px) {
+    .labsoft-dashboard {
+      grid-template-columns: 1fr;
+    }
+
+    .labsoft-side-stack {
+      grid-template-rows: auto;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .labsoft-admin-page {
+      padding: 16px;
+    }
+
+    .labsoft-register-card,
+    .labsoft-list-card,
+    .labsoft-overview-panel {
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .labsoft-section-title,
+    .labsoft-title-row,
+    .labsoft-overview-panel .labsoft-section-title,
+    .labsoft-directory-head,
+    .labsoft-lab-body,
+    .labsoft-form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .labsoft-title-icon {
+      width: 44px;
+      height: 44px;
+    }
+
+    .labsoft-mini-search,
+    .labsoft-status-pill {
+      width: 100%;
+      justify-self: stretch;
+    }
+
+    .labsoft-recent-item {
+      grid-template-columns: 46px minmax(0, 1fr);
+      min-height: 78px;
+      padding: 12px;
+    }
+
+    .labsoft-recent-item .labsoft-row-actions {
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+      padding-left: 58px;
+    }
+
+    .labsoft-card-icon {
+      width: 44px;
+      height: 44px;
+      flex-basis: 44px;
+    }
+
+    .labsoft-directory-head,
+    .labsoft-category-row {
+      justify-content: flex-start;
+    }
+
+    .labsoft-lab-head {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  /* Scoped light-theme guard: this page used to have dark purple panels.
+     Keep these high-specificity rules last so shared admin styles cannot bring
+     the old block-heavy dashboard back. */
+  #section-labsoftware .labsoft-admin-page,
+  .labsoft-admin-page {
+    background:
+      radial-gradient(circle at 16% 8%, rgba(143, 92, 232, .11), transparent 28%),
+      linear-gradient(180deg, #fbf9ff 0%, #f5f0ff 100%) !important;
+  }
+
+  #section-labsoftware .labsoft-card-shell,
+  #section-labsoftware .labsoft-panel,
+  #section-labsoftware .labsoft-register-panel,
+  #section-labsoftware .labsoft-list-card,
+  #section-labsoftware .labsoft-overview-panel,
+  #section-labsoftware .labsoft-lab-section,
+  .labsoft-admin-page .labsoft-card-shell,
+  .labsoft-admin-page .labsoft-panel,
+  .labsoft-admin-page .labsoft-register-panel,
+  .labsoft-admin-page .labsoft-list-card,
+  .labsoft-admin-page .labsoft-overview-panel,
+  .labsoft-admin-page .labsoft-lab-section {
+    border: 1px solid rgba(231, 221, 246, .95) !important;
+    border-radius: 24px !important;
+    background: #fff !important;
+    color: #211044 !important;
+    box-shadow: 0 22px 54px rgba(70, 40, 120, .12) !important;
+  }
+
+  #section-labsoftware .labsoft-panel-head,
+  #section-labsoftware .labsoft-lab-head,
+  .labsoft-admin-page .labsoft-panel-head,
+  .labsoft-admin-page .labsoft-lab-head {
+    border-color: #e7ddf6 !important;
+    background: #fff !important;
+    color: #24104f !important;
+  }
+
+  #section-labsoftware .labsoft-dropzone,
+  .labsoft-admin-page .labsoft-dropzone {
+    border-color: #c6a9f7 !important;
+    background: linear-gradient(180deg, #fbf8ff 0%, #f4edff 100%) !important;
+    color: #24104f !important;
+  }
+
+  #section-labsoftware .labsoft-recent-item,
+  #section-labsoftware .labsoft-card,
+  #section-labsoftware .labsoft-overview-card,
+  .labsoft-admin-page .labsoft-recent-item,
+  .labsoft-admin-page .labsoft-card,
+  .labsoft-admin-page .labsoft-overview-card {
+    border-color: #ebe2f7 !important;
+    background: #fff !important;
+    color: #211044 !important;
+    box-shadow: 0 12px 26px rgba(70, 40, 120, .08) !important;
+  }
+
+  #section-labsoftware .labsoft-section-title h2,
+  #section-labsoftware .labsoft-panel-head strong,
+  #section-labsoftware .labsoft-lab-title strong,
+  #section-labsoftware .labsoft-recent-info strong,
+  #section-labsoftware .labsoft-card-info strong,
+  .labsoft-admin-page .labsoft-section-title h2,
+  .labsoft-admin-page .labsoft-panel-head strong,
+  .labsoft-admin-page .labsoft-lab-title strong,
+  .labsoft-admin-page .labsoft-recent-info strong,
+  .labsoft-admin-page .labsoft-card-info strong {
+    color: #24104f !important;
+  }
+
+  #section-labsoftware .labsoft-section-title p,
+  #section-labsoftware .labsoft-lab-title span,
+  #section-labsoftware .labsoft-recent-info span,
+  #section-labsoftware .labsoft-card-info span,
+  .labsoft-admin-page .labsoft-section-title p,
+  .labsoft-admin-page .labsoft-lab-title span,
+  .labsoft-admin-page .labsoft-recent-info span,
+  .labsoft-admin-page .labsoft-card-info span {
+    color: #756992 !important;
+  }
+
+  /* Compact dashboard density */
+  #section-labsoftware .labsoft-admin-page,
+  .labsoft-admin-page {
+    padding: 18px !important;
+  }
+
+  #section-labsoftware .labsoft-dashboard,
+  .labsoft-admin-page .labsoft-dashboard {
+    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr) !important;
+    gap: 16px !important;
+    margin-bottom: 16px !important;
+  }
+
+  #section-labsoftware .labsoft-side-stack,
+  .labsoft-admin-page .labsoft-side-stack {
+    gap: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-card-shell,
+  #section-labsoftware .labsoft-panel,
+  #section-labsoftware .labsoft-register-panel,
+  #section-labsoftware .labsoft-list-card,
+  #section-labsoftware .labsoft-overview-panel,
+  #section-labsoftware .labsoft-lab-section,
+  .labsoft-admin-page .labsoft-card-shell,
+  .labsoft-admin-page .labsoft-panel,
+  .labsoft-admin-page .labsoft-register-panel,
+  .labsoft-admin-page .labsoft-list-card,
+  .labsoft-admin-page .labsoft-overview-panel,
+  .labsoft-admin-page .labsoft-lab-section {
+    border-radius: 18px !important;
+    box-shadow: 0 12px 30px rgba(70, 40, 120, .09) !important;
+  }
+
+  #section-labsoftware .labsoft-register-card,
+  #section-labsoftware .labsoft-list-card,
+  #section-labsoftware .labsoft-overview-panel,
+  .labsoft-admin-page .labsoft-register-card,
+  .labsoft-admin-page .labsoft-list-card,
+  .labsoft-admin-page .labsoft-overview-panel {
+    padding: 18px !important;
+  }
+
+  #section-labsoftware .labsoft-section-title,
+  .labsoft-admin-page .labsoft-section-title {
+    grid-template-columns: 38px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-title-row,
+  .labsoft-admin-page .labsoft-title-row {
+    grid-template-columns: 38px minmax(0, 1fr) minmax(220px, 300px) !important;
+  }
+
+  #section-labsoftware .labsoft-overview-panel .labsoft-section-title,
+  .labsoft-admin-page .labsoft-overview-panel .labsoft-section-title {
+    grid-template-columns: 38px minmax(0, 1fr) auto !important;
+  }
+
+  #section-labsoftware .labsoft-title-icon,
+  .labsoft-admin-page .labsoft-title-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-title-icon i,
+  .labsoft-admin-page .labsoft-title-icon i {
+    font-size: 15px !important;
+  }
+
+  #section-labsoftware .labsoft-section-title h2,
+  .labsoft-admin-page .labsoft-section-title h2 {
+    font-size: 17px !important;
+    line-height: 1.15 !important;
+  }
+
+  #section-labsoftware .labsoft-section-title p,
+  .labsoft-admin-page .labsoft-section-title p {
+    margin-top: 4px !important;
+    font-size: 12.5px !important;
+    line-height: 1.35 !important;
+  }
+
+  #section-labsoftware .labsoft-dropzone,
+  .labsoft-admin-page .labsoft-dropzone {
+    min-height: 168px !important;
+    gap: 8px !important;
+    border-radius: 15px !important;
+    padding: 16px !important;
+  }
+
+  #section-labsoftware .labsoft-drop-icon,
+  .labsoft-admin-page .labsoft-drop-icon {
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 21px !important;
+  }
+
+  #section-labsoftware .labsoft-drop-copy strong,
+  .labsoft-admin-page .labsoft-drop-copy strong {
+    font-size: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-drop-copy span,
+  .labsoft-admin-page .labsoft-drop-copy span {
+    margin-top: 3px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-browse-btn,
+  .labsoft-admin-page .labsoft-browse-btn {
+    min-height: 34px !important;
+    padding: 0 15px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-file-chip,
+  .labsoft-admin-page .labsoft-file-chip {
+    min-height: 24px !important;
+    padding: 3px 10px !important;
+    font-size: 10.5px !important;
+  }
+
+  #section-labsoftware .labsoft-accept-block,
+  .labsoft-admin-page .labsoft-accept-block {
+    margin-top: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-accept-label,
+  .labsoft-admin-page .labsoft-accept-label {
+    margin-bottom: 7px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-accept-row,
+  .labsoft-admin-page .labsoft-accept-row {
+    gap: 6px !important;
+  }
+
+  #section-labsoftware .labsoft-accept-row span,
+  .labsoft-admin-page .labsoft-accept-row span {
+    min-height: 24px !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
+  }
+
+  #section-labsoftware .labsoft-form-grid,
+  .labsoft-admin-page .labsoft-form-grid {
+    gap: 12px !important;
+    margin-top: 16px !important;
+  }
+
+  #section-labsoftware .labsoft-field,
+  .labsoft-admin-page .labsoft-field {
+    gap: 6px !important;
+  }
+
+  #section-labsoftware .labsoft-field span,
+  .labsoft-admin-page .labsoft-field span {
+    font-size: 11.5px !important;
+  }
+
+  #section-labsoftware .labsoft-field input,
+  #section-labsoftware .labsoft-field select,
+  .labsoft-admin-page .labsoft-field input,
+  .labsoft-admin-page .labsoft-field select {
+    min-height: 42px !important;
+    border-radius: 10px !important;
+    padding: 0 12px !important;
+    font-size: 13px !important;
+  }
+
+  #section-labsoftware .labsoft-submit-btn,
+  .labsoft-admin-page .labsoft-submit-btn {
+    min-height: 46px !important;
+    margin-top: 16px !important;
+    border-radius: 12px !important;
+    font-size: 13.5px !important;
+  }
+
+  #section-labsoftware .labsoft-mini-search input,
+  .labsoft-admin-page .labsoft-mini-search input {
+    min-height: 40px !important;
+    border-radius: 10px !important;
+    padding-left: 40px !important;
+    font-size: 13px !important;
+  }
+
+  #section-labsoftware .labsoft-mini-search i,
+  .labsoft-admin-page .labsoft-mini-search i {
+    left: 14px !important;
+    font-size: 13px !important;
+  }
+
+  #section-labsoftware .labsoft-recent-list,
+  .labsoft-admin-page .labsoft-recent-list {
+    gap: 10px !important;
+    max-height: 292px !important;
+    padding-right: 4px !important;
+  }
+
+  #section-labsoftware .labsoft-recent-item,
+  .labsoft-admin-page .labsoft-recent-item {
+    grid-template-columns: 42px minmax(0, 1fr) 36px !important;
+    gap: 10px !important;
+    min-height: 64px !important;
+    padding: 10px 12px !important;
+    border-radius: 13px !important;
+    box-shadow: 0 8px 18px rgba(70, 40, 120, .07) !important;
+  }
+
+  #section-labsoftware .labsoft-card-icon,
+  .labsoft-admin-page .labsoft-card-icon {
+    width: 38px !important;
+    height: 38px !important;
+    flex-basis: 38px !important;
+    border-radius: 11px !important;
+    font-size: 15px !important;
+  }
+
+  #section-labsoftware .labsoft-recent-info strong,
+  #section-labsoftware .labsoft-card-info strong,
+  .labsoft-admin-page .labsoft-recent-info strong,
+  .labsoft-admin-page .labsoft-card-info strong {
+    font-size: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-recent-info span,
+  #section-labsoftware .labsoft-card-info span,
+  .labsoft-admin-page .labsoft-recent-info span,
+  .labsoft-admin-page .labsoft-card-info span {
+    margin-top: 3px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-delete-btn,
+  .labsoft-admin-page .labsoft-delete-btn {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-status-pill,
+  .labsoft-admin-page .labsoft-status-pill {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-grid,
+  .labsoft-admin-page .labsoft-overview-grid {
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-card,
+  .labsoft-admin-page .labsoft-overview-card {
+    min-height: 84px !important;
+    grid-template-columns: minmax(0, 1fr) 36px !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-copy strong,
+  .labsoft-admin-page .labsoft-overview-copy strong {
+    font-size: 12.5px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-copy b,
+  .labsoft-admin-page .labsoft-overview-copy b {
+    margin-top: 5px !important;
+    font-size: 25px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-copy span,
+  .labsoft-admin-page .labsoft-overview-copy span {
+    margin-top: 3px !important;
+    font-size: 10px !important;
+  }
+
+  #section-labsoftware .labsoft-overview-icon,
+  .labsoft-admin-page .labsoft-overview-icon {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-directory-head,
+  .labsoft-admin-page .labsoft-directory-head {
+    gap: 12px !important;
+    margin: 6px auto 10px !important;
+  }
+
+  #section-labsoftware .labsoft-directory-head h2,
+  .labsoft-admin-page .labsoft-directory-head h2 {
+    font-size: 17px !important;
+  }
+
+  #section-labsoftware .labsoft-directory-head p,
+  .labsoft-admin-page .labsoft-directory-head p {
+    margin-top: 3px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-category-row,
+  .labsoft-admin-page .labsoft-category-row {
+    gap: 6px !important;
+  }
+
+  #section-labsoftware .labsoft-chip,
+  .labsoft-admin-page .labsoft-chip {
+    min-height: 30px !important;
+    padding: 0 11px !important;
+    font-size: 11px !important;
+  }
+
+  #section-labsoftware .labsoft-admin-list,
+  .labsoft-admin-page .labsoft-admin-list {
+    gap: 10px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-head,
+  .labsoft-admin-page .labsoft-lab-head {
+    min-height: 54px !important;
+    gap: 10px !important;
+    padding: 12px 16px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-icon,
+  .labsoft-admin-page .labsoft-lab-icon {
+    width: 36px !important;
+    height: 36px !important;
+    flex-basis: 36px !important;
+    border-radius: 11px !important;
+    font-size: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-title,
+  .labsoft-admin-page .labsoft-lab-title {
+    gap: 9px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-title strong,
+  .labsoft-admin-page .labsoft-lab-title strong {
+    font-size: 13.5px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-title span,
+  .labsoft-admin-page .labsoft-lab-title span {
+    margin-top: 2px !important;
+    font-size: 11.5px !important;
+  }
+
+  #section-labsoftware .labsoft-publish,
+  .labsoft-admin-page .labsoft-publish {
+    min-height: 30px !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-body,
+  .labsoft-admin-page .labsoft-lab-body {
+    gap: 9px !important;
+    padding: 0 16px 14px !important;
+  }
+
+  #section-labsoftware .labsoft-card,
+  .labsoft-admin-page .labsoft-card {
+    gap: 9px !important;
+    padding: 9px 10px !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+  }
+
+  /* Per-Lab Directory production layout */
+  #section-labsoftware .labsoft-lab-section,
+  .labsoft-admin-page .labsoft-lab-section {
+    overflow: hidden !important;
+    background: #fff !important;
+  }
+
+  #section-labsoftware .labsoft-lab-head,
+  .labsoft-admin-page .labsoft-lab-head {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    padding: 12px 14px !important;
+    min-height: 58px !important;
+    cursor: default !important;
+  }
+
+  #section-labsoftware .labsoft-lab-toggle,
+  .labsoft-admin-page .labsoft-lab-toggle {
+    min-width: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    color: inherit !important;
+    font: inherit !important;
+    text-align: left !important;
+    cursor: pointer !important;
+  }
+
+  #section-labsoftware .labsoft-lab-title,
+  .labsoft-admin-page .labsoft-lab-title {
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-icon,
+  .labsoft-admin-page .labsoft-lab-icon {
+    width: 42px !important;
+    height: 42px !important;
+    flex: 0 0 42px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 13px !important;
+    background: linear-gradient(135deg, #8f5ce8, #6f42d9) !important;
+    color: #fff !important;
+    line-height: 1 !important;
+    box-shadow: 0 10px 20px rgba(111, 66, 217, .18) !important;
+    overflow: hidden !important;
+  }
+
+  #section-labsoftware .labsoft-lab-icon i,
+  .labsoft-admin-page .labsoft-lab-icon i {
+    display: block !important;
+    color: #fff !important;
+    font-size: 17px !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
+
+  #section-labsoftware .labsoft-lab-copy,
+  .labsoft-admin-page .labsoft-lab-copy {
+    min-width: 0 !important;
+    display: block !important;
+  }
+
+  #section-labsoftware .labsoft-lab-copy strong,
+  .labsoft-admin-page .labsoft-lab-copy strong {
+    display: block !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #24104f !important;
+    font-size: 14px !important;
+    font-weight: 950 !important;
+    line-height: 1.2 !important;
+  }
+
+  #section-labsoftware .labsoft-lab-copy span,
+  .labsoft-admin-page .labsoft-lab-copy span {
+    display: block !important;
+    margin-top: 2px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #756992 !important;
+    font-size: 11.5px !important;
+    font-weight: 750 !important;
+    line-height: 1.25 !important;
+  }
+
+  #section-labsoftware .labsoft-lab-actions,
+  .labsoft-admin-page .labsoft-lab-actions {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    min-width: max-content !important;
+  }
+
+  #section-labsoftware .labsoft-publish,
+  .labsoft-admin-page .labsoft-publish {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-height: 28px !important;
+    padding: 0 10px !important;
+    border-radius: 999px !important;
+    border-color: #bbf7d0 !important;
+    background: #ecfdf3 !important;
+    color: #15803d !important;
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+  }
+
+  #section-labsoftware .labsoft-publish.hidden,
+  .labsoft-admin-page .labsoft-publish.hidden {
+    border-color: #fecaca !important;
+    background: #fff1f2 !important;
+    color: #dc2626 !important;
+  }
+
+  #section-labsoftware .labsoft-collapse-btn,
+  .labsoft-admin-page .labsoft-collapse-btn {
+    width: 30px !important;
+    height: 30px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e7ddf6 !important;
+    border-radius: 10px !important;
+    background: #fbf8ff !important;
+    color: #6f42d9 !important;
+    cursor: pointer !important;
+    transition: transform .16s ease, background .16s ease, border-color .16s ease !important;
+  }
+
+  #section-labsoftware .labsoft-collapse-btn:hover,
+  .labsoft-admin-page .labsoft-collapse-btn:hover {
+    border-color: #c8aef5 !important;
+    background: #f4edff !important;
+  }
+
+  #section-labsoftware .labsoft-lab-section.collapsed .labsoft-collapse-btn i,
+  .labsoft-admin-page .labsoft-lab-section.collapsed .labsoft-collapse-btn i {
+    transform: rotate(-90deg) !important;
+  }
+
+  #section-labsoftware .labsoft-lab-body,
+  .labsoft-admin-page .labsoft-lab-body {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 0 14px 12px !important;
+  }
+
+  #section-labsoftware .labsoft-card,
+  .labsoft-admin-page .labsoft-card {
+    display: grid !important;
+    grid-template-columns: 38px minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-height: 56px !important;
+    padding: 9px 10px !important;
+    border: 1px solid #eee6fb !important;
+    border-radius: 12px !important;
+    background: #fbf9ff !important;
+    box-shadow: 0 6px 14px rgba(70, 40, 120, .045) !important;
+  }
+
+  #section-labsoftware .labsoft-row-actions,
+  .labsoft-admin-page .labsoft-row-actions {
+    gap: 5px !important;
+  }
+
+  #section-labsoftware .labsoft-action-btn,
+  #section-labsoftware .labsoft-delete-btn,
+  .labsoft-admin-page .labsoft-action-btn,
+  .labsoft-admin-page .labsoft-delete-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 9px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-card .labsoft-card-icon,
+  .labsoft-admin-page .labsoft-card .labsoft-card-icon {
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+  }
+
+  #section-labsoftware .labsoft-card .labsoft-card-info,
+  .labsoft-admin-page .labsoft-card .labsoft-card-info {
+    min-width: 0 !important;
+  }
+
+  #section-labsoftware .labsoft-card .labsoft-card-info strong,
+  .labsoft-admin-page .labsoft-card .labsoft-card-info strong {
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+  }
+
+  #section-labsoftware .labsoft-card .labsoft-card-info span,
+  .labsoft-admin-page .labsoft-card .labsoft-card-info span {
+    margin-top: 2px !important;
+    font-size: 11.5px !important;
+    line-height: 1.25 !important;
+  }
+
+  #section-labsoftware .labsoft-card .labsoft-delete-btn,
+  .labsoft-admin-page .labsoft-card .labsoft-delete-btn {
+    width: 32px !important;
+    height: 32px !important;
+    justify-self: end !important;
+    align-self: center !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+  }
+
+  #section-labsoftware .labsoft-lab-section.collapsed .labsoft-lab-body,
+  .labsoft-admin-page .labsoft-lab-section.collapsed .labsoft-lab-body {
+    display: none !important;
+  }
+
+  @media (max-width: 1180px) {
+    #section-labsoftware .labsoft-dashboard,
+    .labsoft-admin-page .labsoft-dashboard {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @media (max-width: 760px) {
+    #section-labsoftware .labsoft-admin-page,
+    .labsoft-admin-page {
+      padding: 12px !important;
+    }
+
+    #section-labsoftware .labsoft-title-row,
+    #section-labsoftware .labsoft-overview-panel .labsoft-section-title,
+    .labsoft-admin-page .labsoft-title-row,
+    .labsoft-admin-page .labsoft-overview-panel .labsoft-section-title {
+      grid-template-columns: 38px minmax(0, 1fr) !important;
+    }
+
+    #section-labsoftware .labsoft-mini-search,
+    #section-labsoftware .labsoft-status-pill,
+    .labsoft-admin-page .labsoft-mini-search,
+    .labsoft-admin-page .labsoft-status-pill {
+      grid-column: 1 / -1 !important;
+    }
+  }
+</style>

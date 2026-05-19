@@ -1,0 +1,302 @@
+<div class="rewards-admin-page">
+  <div class="leader-admin-hero rewards-hero">
+    <div>
+      <div class="leader-admin-kicker"><i class="fa fa-gift"></i> XP rewards</div>
+      <h1>Rewards</h1>
+      <p>Award bonus XP for helpful work, lab support, clean stations, or standout participation.</p>
+    </div>
+    <div class="leader-admin-actions">
+      <button class="leader-secondary-btn" onclick="resetSessions()"><i class="fa fa-rotate-left"></i> Reset Sessions</button>
+    </div>
+  </div>
+
+  <div class="rewards-layout">
+    <section class="reward-compose-panel">
+      <div class="reward-panel-header">
+        <strong><i class="fa fa-star"></i> Award Points</strong>
+        <span>Search a student, enter XP, then record the reason.</span>
+      </div>
+
+      <div class="reward-form-body">
+        <div class="mprem-fg full">
+          <label>Student ID Number</label>
+          <div class="reward-search-wrap">
+            <i class="fa fa-magnifying-glass"></i>
+            <input type="text" id="reward-idnum" placeholder="Search ID or student name" oninput="searchRewardStudent()" autocomplete="off" />
+            <div id="reward-student-dropdown" class="reward-dropdown"></div>
+          </div>
+
+          <div id="reward-student-preview" class="reward-preview">
+             <img id="reward-preview-pic" src="static/temppfp.jpg" onerror="this.src='static/temppfp.jpg'" />
+             <div>
+               <div id="reward-preview-name">Name</div>
+               <span id="reward-preview-course">Course</span>
+             </div>
+          </div>
+        </div>
+
+        <div class="reward-points-row">
+          <div class="mprem-fg full">
+            <label>Points to Add</label>
+            <input type="number" id="reward-pts-val" min="1" max="100" placeholder="e.g. 10" />
+          </div>
+          <div class="reward-preset-row">
+            <button type="button" onclick="document.getElementById('reward-pts-val').value=1">+1</button>
+            <button type="button" onclick="document.getElementById('reward-pts-val').value=5">+5</button>
+            <button type="button" onclick="document.getElementById('reward-pts-val').value=10">+10</button>
+          </div>
+        </div>
+
+        <div class="mprem-fg full">
+          <label>Reason</label>
+          <input type="text" id="reward-reason" placeholder="e.g. Cleaned workstation" />
+        </div>
+
+        <button class="reward-submit-btn" onclick="submitDirectRewardPoints()">
+          <i class="fa fa-circle-plus"></i> Award Points
+        </button>
+      </div>
+    </section>
+
+    <section class="leader-panel rewards-board">
+      <div class="leader-panel-header">
+        <div>
+          <strong><i class="fa fa-ranking-star"></i> Points Leaderboard</strong>
+          <span>Use the quick action to prefill the reward form.</span>
+        </div>
+      </div>
+
+      <div class="leader-table-wrap">
+        <table class="leader-table" id="rewards-leaderboard-table">
+          <thead>
+            <tr>
+              <th style="width:72px;">Rank</th>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Sit-ins</th>
+              <th>Total Hours</th>
+              <th>Avg Session</th>
+              <th>Points</th>
+              <th style="text-align:right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="rewards-leaderboard-body">
+            <tr><td colspan="8" class="leader-empty"><i class="fa fa-spinner fa-spin"></i> Loading leaderboard...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .rewards-admin-page {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding: 22px;
+    background: linear-gradient(180deg, #faf9ff 0%, #f3effb 100%);
+  }
+
+  .rewards-layout {
+    display: grid;
+    grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .reward-compose-panel {
+    position: sticky;
+    top: 0;
+    border: 1px solid #e5dcfb;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(32, 17, 63, .06);
+    overflow: visible;
+  }
+
+  .reward-panel-header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #eee6fb;
+  }
+
+  .reward-panel-header strong {
+    display: block;
+    color: var(--admin-text);
+    font-size: 16px;
+    font-weight: 1000;
+  }
+
+  .reward-panel-header span {
+    display: block;
+    margin-top: 4px;
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 750;
+  }
+
+  .reward-form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 18px;
+  }
+
+  .reward-search-wrap {
+    position: relative;
+  }
+
+  .reward-search-wrap > i {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    z-index: 1;
+    transform: translateY(-50%);
+    color: var(--admin-muted);
+    font-size: 13px;
+  }
+
+  .reward-search-wrap input {
+    width: 100%;
+    padding-left: 36px;
+  }
+
+  .reward-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 50;
+    max-height: 230px;
+    overflow: auto;
+    border: 1px solid #ded2f4;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 18px 44px rgba(35, 9, 78, .18);
+  }
+
+  .reward-student-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    border-bottom: 1px solid #f1eafb;
+    cursor: pointer;
+  }
+
+  .reward-student-option:hover {
+    background: #fbf9ff;
+  }
+
+  .reward-student-option:last-child {
+    border-bottom: 0;
+  }
+
+  .reward-student-option img {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .reward-preview {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 13px;
+    border: 1px solid #e5dcfb;
+    border-radius: 13px;
+    background: #fbf9ff;
+  }
+
+  .reward-preview img {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    object-fit: cover;
+  }
+
+  #reward-preview-name {
+    color: var(--admin-text);
+    font-size: 14px;
+    font-weight: 1000;
+  }
+
+  #reward-preview-course {
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .reward-points-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: end;
+  }
+
+  .reward-preset-row {
+    display: flex;
+    gap: 6px;
+    padding-bottom: 1px;
+  }
+
+  .reward-preset-row button {
+    min-width: 42px;
+    height: 40px;
+    border: 1px solid #ded2f4;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--admin-purple);
+    font-weight: 1000;
+    cursor: pointer;
+  }
+
+  .reward-preset-row button:hover {
+    background: #f7f2ff;
+  }
+
+  .reward-submit-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--admin-purple);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 1000;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(52, 16, 112, .16);
+  }
+
+  .reward-submit-btn:hover {
+    background: var(--admin-purple-2);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 1080px) {
+    .rewards-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .reward-compose-panel {
+      position: static;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .rewards-admin-page {
+      padding: 14px;
+    }
+
+    .reward-points-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

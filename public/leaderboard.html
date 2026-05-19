@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | Leaderboard</title>
+  <meta name="description" content="Top performing students in the CCS Sit-in Monitoring System ranked by XP." />
+  <link rel="stylesheet" href="style.css?v=20" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="user-theme.css?v=3" />
+  <link rel="stylesheet" href="leaderboard.css?v=1" />
+</head>
+<body class="student-shell leaderboard-refresh">
+
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html" class="active"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <main class="lb-page">
+    <section class="lb-hero" aria-label="Leaderboard overview">
+      <div class="lb-hero-copy">
+        <span class="lb-kicker"><i class="fa fa-ranking-star"></i> CCS Performance Board</span>
+        <h1 class="lb-title">Leaderboard</h1>
+        <p class="lb-subtitle">Follow the top students earning XP through completed sit-in sessions, longer lab time, and admin-awarded rewards.</p>
+      </div>
+      <div class="lb-guide-card">
+        <strong><i class="fa fa-circle-info"></i> XP rules</strong>
+        <span>Completed sessions earn XP. Longer productive sessions and admin rewards help students climb faster.</span>
+      </div>
+    </section>
+
+    <section class="lb-stats" aria-label="Leaderboard totals">
+      <div class="lb-stat">
+        <i class="fa fa-users"></i>
+        <div>
+          <span>Ranked Students</span>
+          <strong id="stat-ranked">0</strong>
+          <small>Students on this board</small>
+        </div>
+      </div>
+      <div class="lb-stat">
+        <i class="fa fa-bolt"></i>
+        <div>
+          <span>Board Total XP</span>
+          <strong id="stat-xp">0</strong>
+          <small>Combined XP from all students</small>
+        </div>
+      </div>
+      <div class="lb-stat">
+        <i class="fa fa-clock"></i>
+        <div>
+          <span>Board Lab Time</span>
+          <strong id="stat-hours">0h</strong>
+          <small>Combined completed lab time</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="lb-xp-guide" aria-label="How to earn XP">
+      <div class="lb-xp-guide-head">
+        <div class="lb-xp-title">
+          <i class="fa fa-bolt lb-xp-title-icon"></i>
+          <div class="lb-xp-title-copy">
+            <span>How to Earn XP</span>
+            <p>Build XP through consistent sessions, productive lab time, and bonus rewards.</p>
+          </div>
+        </div>
+        <strong><i class="fa fa-ranking-star"></i> Ranked by total XP</strong>
+      </div>
+      <div class="lb-xp-steps">
+        <article class="lb-xp-step">
+          <span class="lb-xp-num">01</span>
+          <i class="fa fa-check-circle"></i>
+          <div>
+            <strong>Complete sessions</strong>
+            <p>Finished sit-ins add XP and help you appear on the board.</p>
+          </div>
+        </article>
+        <article class="lb-xp-step featured">
+          <span class="lb-xp-num">02</span>
+          <i class="fa fa-clock"></i>
+          <div>
+            <strong>Stay productive</strong>
+            <p>Longer productive lab time can help you earn more XP.</p>
+          </div>
+        </article>
+        <article class="lb-xp-step">
+          <span class="lb-xp-num">03</span>
+          <i class="fa fa-gift"></i>
+          <div>
+            <strong>Earn admin rewards</strong>
+            <p>Admins may award bonus XP for standout participation.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="lb-podium-section" aria-label="Top three students">
+      <div class="lb-section-head">
+        <div>
+          <span>Top Performers</span>
+          <strong>This ranking updates from completed records.</strong>
+        </div>
+      </div>
+      <div class="podium" id="podium">
+        <div class="lb-empty-state"><i class="fa fa-spinner fa-spin"></i> Loading top students...</div>
+      </div>
+    </section>
+
+    <section class="lb-layout" aria-label="Leaderboard details">
+      <div class="lb-card lb-main">
+        <div class="lb-card-header">
+          <span><i class="fa fa-list-ol"></i> Full Ranking</span>
+          <small id="lb-table-meta">Loading</small>
+        </div>
+        <div class="lb-table-wrap">
+          <table class="lb-table" id="lb-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>XP</th>
+                <th>Sessions</th>
+                <th>Total Hours</th>
+              </tr>
+            </thead>
+            <tbody id="lb-tbody">
+              <tr><td colspan="5" class="table-empty"><i class="fa fa-spinner fa-spin"></i> Loading leaderboard...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <aside class="lb-card my-rank-card" aria-label="Your ranking">
+        <div class="lb-card-header">
+          <span><i class="fa fa-medal"></i> Your Ranking</span>
+        </div>
+        <div class="my-rank-content" id="my-rank-content">
+          <i class="fa fa-spinner fa-spin"></i>
+          <p>Loading your rank...</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script src="leaderboard.js?v=1"></script>
+</body>
+</html>

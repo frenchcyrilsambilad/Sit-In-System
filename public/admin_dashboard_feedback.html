@@ -1,0 +1,77 @@
+      <div class="admin-panel feedback-report-page">
+        <div class="feedback-report-header">
+          <div class="feedback-title-row">
+            <div class="feedback-title-icon"><i class="fa fa-comments"></i></div>
+            <div>
+              <h2>Feedback Reports</h2>
+              <p>Review feedback submitted by students</p>
+            </div>
+          </div>
+
+          <div class="feedback-metrics">
+            <div class="feedback-metric-card">
+              <span><i class="fa fa-inbox"></i></span>
+              <div>
+                <small>Total Feedbacks</small>
+                <strong id="fb-count-badge">0</strong>
+              </div>
+            </div>
+            <div class="feedback-metric-card">
+              <span><i class="fa fa-star"></i></span>
+              <div>
+                <small>Average Rating</small>
+                <strong id="fb-average-badge">0.0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback-controls">
+          <div id="fb-dt-buttons-container" class="feedback-export-buttons">
+            <!-- Export buttons injected here -->
+          </div>
+          <div class="feedback-filter-row">
+            <label>
+              <span>Laboratory</span>
+              <select id="fb-lab-filter">
+                <option value="">All Laboratories</option>
+              </select>
+            </label>
+            <label>
+              <span>Rating</span>
+              <select id="fb-rating-filter">
+                <option value="">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4 Stars</option>
+                <option value="3">3 Stars</option>
+                <option value="2">2 Stars</option>
+                <option value="1">1 Star</option>
+              </select>
+            </label>
+            <button type="button" id="fb-clear-filters" class="feedback-clear-btn"><i class="fa fa-filter-circle-xmark"></i> Clear</button>
+            <div class="feedback-search">
+              <i class="fa fa-search"></i>
+              <input type="text" id="fb-custom-search" placeholder="Search feedback..." />
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-panel-body feedback-table-card">
+          <table id="feedback-datatable" class="display records-table feedback-table" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID Number</th>
+                <th>Student</th>
+                <th>Laboratory</th>
+                <th>Rating</th>
+                <th>Submitted</th>
+                <th>Message</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data dynamically injected via DataTables -->
+            </tbody>
+          </table>
+        </div>
+      </div>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | Reservation</title>
+  <meta name="description" content="Reserve a lab PC in advance for your sit-in session at CCS." />
+  <link rel="stylesheet" href="style.css?v=20" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="user-theme.css?v=16" />
+  <link rel="stylesheet" href="reservation.css?v=6" />
+</head>
+<body class="res-page student-shell reservation-refresh">
+
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html" class="active"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <section class="res-hero" aria-label="Reservation overview">
+    <div class="res-hero-inner">
+      <div class="res-hero-left">
+        <span class="res-hero-eyebrow"><i class="fa fa-calendar-check"></i> Reservation</span>
+        <h1 class="res-hero-title">Reserve Your Workstation</h1>
+        <p class="res-hero-sub">Choose a purpose, schedule, lab, and PC from one clean workspace.</p>
+        <div class="res-stepper" aria-label="Reservation steps">
+          <span><b>1</b> Details</span>
+          <span><b>2</b> Schedule</span>
+          <span><b>3</b> PC</span>
+          <span><b>4</b> Confirm</span>
+        </div>
+      </div>
+      <div class="res-hero-stats">
+        <div class="res-stat-card">
+          <div class="res-stat-num" id="hero-sessions">--</div>
+          <div class="res-stat-label"><i class="fa fa-hourglass-half"></i> Sessions Left</div>
+        </div>
+        <div class="res-stat-card" id="hero-active-res-card" style="display:none;">
+          <div class="res-stat-num" id="hero-active-res">0</div>
+          <div class="res-stat-label"><i class="fa fa-calendar-check"></i> My Reservations</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="res-main">
+    <div class="res-tabs" role="tablist" aria-label="Reservation sections">
+      <button type="button" class="res-tab active" id="tab-new-reservation" onclick="switchReservationTab('new')" aria-controls="res-panel-new">
+        <i class="fa fa-calendar-plus"></i>
+        New Reservation
+      </button>
+      <button type="button" class="res-tab" id="tab-my-reservations" onclick="switchReservationTab('mine')" aria-controls="res-panel-mine">
+        <i class="fa fa-list-check"></i>
+        My Reservations
+        <span id="res-tab-count">0</span>
+      </button>
+    </div>
+
+    <div class="res-tab-panel active" id="res-panel-new">
+    <div class="res-layout">
+      <section class="res-form-card" aria-label="New reservation form">
+        <div class="res-card-header">
+          <span><i class="fa fa-plus-circle"></i> New Reservation</span>
+          <small>Required fields are marked *</small>
+        </div>
+
+        <div id="res-alert" class="res-alert" style="display:none;"></div>
+
+        <div class="res-form-body">
+          <div class="res-section-title">Student</div>
+          <div class="rf-row-inline">
+            <div class="rf-row">
+              <label class="rf-label" for="res-id"><i class="fa fa-id-card"></i> ID Number</label>
+              <input type="text" class="rf-input" id="res-id" readonly />
+            </div>
+            <div class="rf-row">
+              <label class="rf-label" for="res-name"><i class="fa fa-user"></i> Name</label>
+              <input type="text" class="rf-input" id="res-name" readonly />
+            </div>
+          </div>
+
+          <div class="res-section-title">Reservation Details</div>
+          <div class="rf-row">
+            <label class="rf-label" for="res-purpose"><i class="fa fa-bullseye"></i> Purpose <span class="req">*</span></label>
+            <select class="rf-input" id="res-purpose">
+              <option value="">Select a purpose</option>
+              <option value="C Programming">C Programming</option>
+              <option value="C# Programming">C# Programming</option>
+              <option value="Java Programming">Java Programming</option>
+              <option value="Python Programming">Python Programming</option>
+              <option value="Web Development">Web Development</option>
+              <option value="Database Management">Database Management</option>
+              <option value="Research / Study">Research / Study</option>
+              <option value="Online Class">Online Class</option>
+              <option value="Project Work">Project Work</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+
+          <div class="rf-row">
+            <label class="rf-label" for="res-date"><i class="fa fa-calendar"></i> Date <span class="req">*</span></label>
+            <input type="date" class="rf-input" id="res-date" />
+          </div>
+
+          <div class="rf-row">
+            <label class="rf-label"><i class="fa fa-laptop"></i> Laboratory <span class="req">*</span></label>
+            <div class="lab-pills" id="lab-pills-wrap">
+              <button type="button" class="lab-pill" onclick="selectLab('524',this)">Lab 524</button>
+              <button type="button" class="lab-pill" onclick="selectLab('526',this)">Lab 526</button>
+              <button type="button" class="lab-pill" onclick="selectLab('528',this)">Lab 528</button>
+              <button type="button" class="lab-pill" onclick="selectLab('530',this)">Lab 530</button>
+              <button type="button" class="lab-pill" onclick="selectLab('542',this)">Lab 542</button>
+              <button type="button" class="lab-pill" onclick="selectLab('544',this)">Lab 544</button>
+            </div>
+          </div>
+
+          <div class="rf-row">
+            <label class="rf-label"><i class="fa fa-clock"></i> Time Slot <span class="req">*</span></label>
+            <div class="timeslot-grid" id="timeslot-grid">
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('7:00 AM - 8:00 AM', this)">7:00 - 8:00 AM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('8:00 AM - 9:00 AM', this)">8:00 - 9:00 AM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('9:00 AM - 10:00 AM', this)">9:00 - 10:00 AM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('10:00 AM - 11:00 AM', this)">10:00 - 11:00 AM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('11:00 AM - 12:00 PM', this)">11:00 AM - 12:00 PM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('1:00 PM - 2:00 PM', this)">1:00 - 2:00 PM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('2:00 PM - 3:00 PM', this)">2:00 - 3:00 PM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('3:00 PM - 4:00 PM', this)">3:00 - 4:00 PM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('4:00 PM - 5:00 PM', this)">4:00 - 5:00 PM</button>
+              <button type="button" class="timeslot-btn" onclick="selectTimeSlot('5:00 PM - 6:00 PM', this)">5:00 - 6:00 PM</button>
+            </div>
+          </div>
+
+          <div class="res-selected-preview" id="selected-preview" style="display:none;">
+            <div class="selected-preview-inner">
+              <i class="fa fa-desktop"></i>
+              <span id="preview-text">PC selected</span>
+              <button type="button" class="clear-pc-btn" onclick="clearSelectedPC()" title="Deselect PC" aria-label="Deselect PC"><i class="fa fa-xmark"></i></button>
+            </div>
+          </div>
+
+          <div class="res-sessions-box">
+            <span><i class="fa fa-hourglass-half"></i> Sessions Remaining</span>
+            <strong id="form-sessions">--</strong>
+          </div>
+        </div>
+
+        <div class="res-action-row">
+          <button class="btn-reserve" id="btn-reserve" onclick="handleReserve()">
+            <i class="fa fa-calendar-check"></i> Reserve This PC
+          </button>
+        </div>
+      </section>
+
+      <section class="res-right-col" aria-label="PC availability">
+        <div class="res-grid-card">
+          <div class="res-grid-header">
+            <div class="res-grid-header-left">
+              <div class="res-grid-title"><i class="fa fa-desktop"></i> <span id="grid-lab-name">Select a Lab</span></div>
+              <div class="res-grid-subtitle" id="grid-subtitle">Choose a lab, date, and time slot to view PC availability</div>
+            </div>
+            <div class="res-grid-stats" id="grid-stats" style="display:none;">
+              <span class="grid-stat-chip green"><i class="fa fa-check-circle"></i> <span id="stat-avail">0</span> Available</span>
+              <span class="grid-stat-chip amber"><i class="fa fa-clock"></i> <span id="stat-reserved">0</span> Reserved</span>
+              <span class="grid-stat-chip blue"><i class="fa fa-bolt"></i> <span id="stat-active">0</span> Active</span>
+            </div>
+          </div>
+
+          <div class="res-legend-bar">
+            <span class="res-legend-chip avail"><span class="rldot"></span> Available</span>
+            <span class="res-legend-chip selected-chip"><span class="rldot"></span> Selected</span>
+            <span class="res-legend-chip reserved-chip"><span class="rldot"></span> Reserved</span>
+            <span class="res-legend-chip active-chip"><span class="rldot"></span> Active</span>
+          </div>
+
+          <div id="instructor-desk-bar" class="instructor-desk-bar" style="display:none;">
+            <i class="fa fa-chalkboard-teacher"></i> Instructor's Desk
+          </div>
+
+          <div class="res-pc-grid-wrap">
+            <div class="res-pc-grid" id="pc-grid">
+              <div class="res-pc-placeholder">
+                <i class="fa fa-desktop"></i>
+                <span>Select a lab, date, and time slot to view available PCs</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="res-grid-loading" id="grid-loading" style="display:none;">
+            <div class="res-grid-loading-bar"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    </div>
+
+    <section class="res-table-card res-tab-panel" id="res-panel-mine" aria-label="My reservations">
+      <div class="res-card-header">
+        <span><i class="fa fa-list-check"></i> My Reservations</span>
+        <span class="res-table-count" id="res-table-count"></span>
+      </div>
+      <div class="res-table-wrap">
+        <table class="res-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Lab</th>
+              <th>PC</th>
+              <th>Purpose</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="res-tbody">
+            <tr class="empty-row"><td colspan="7"><i class="fa fa-spinner fa-spin"></i> Loading reservations...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="success-modal">
+    <div class="modal-box">
+      <div class="modal-icon-circle success-circle">
+        <i class="fa fa-check"></i>
+      </div>
+      <h2 class="modal-title" id="modal-title">Reservation Confirmed!</h2>
+      <p class="modal-msg" id="modal-msg"></p>
+      <div class="modal-detail-grid" id="modal-detail-grid"></div>
+      <button class="modal-ok-btn" onclick="closeSuccessModal()">
+        <i class="fa fa-thumbs-up"></i> Got It
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cancel-modal">
+    <div class="modal-box">
+      <div class="modal-icon-circle cancel-circle">
+        <i class="fa fa-triangle-exclamation"></i>
+      </div>
+      <h2 class="modal-title">Cancel Reservation?</h2>
+      <p class="modal-msg">Your reservation will be cancelled and <strong>1 session will be refunded</strong> back to your balance.</p>
+      <div class="modal-action-pair">
+        <button class="modal-secondary-btn" onclick="closeCancelModal()"><i class="fa fa-arrow-left"></i> Keep It</button>
+        <button class="modal-danger-btn" id="confirm-cancel-btn" onclick="confirmCancel()"><i class="fa fa-xmark"></i> Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script src="reservation.js"></script>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%; overflow:hidden;">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css?v=16" />
+  <link rel="stylesheet" href="admin.css?v=40" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+
+<body class="dashboard-body">
+
+  <!-- NAVBAR -->
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand" aria-label="CCS Admin Console">
+      <img src="static/ccslogo.png" alt="" class="nav-brand-logo" />
+      <span class="nav-brand-text">
+        <strong>CCS Admin</strong>
+        <small>Sit-in Management</small>
+      </span>
+      <button type="button" class="theme-toggle-btn admin-theme-toggle" data-theme-toggle aria-label="Switch theme" title="Switch theme"></button>
+      <button type="button" class="admin-nav-toggle" onclick="toggleAdminNav()" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <i class="fa fa-angles-left"></i>
+      </button>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#" onclick="showSection('home',this);return false;"><i class="fa fa-house nav-icon"></i><span class="nav-label">Overview</span></a></li>
+      <li><a href="#" onclick="openSearchModal();return false;"><i class="fa fa-magnifying-glass nav-icon"></i><span class="nav-label">Search Student</span></a></li>
+      <li><a href="#" onclick="showSection('students',this);return false;"><i class="fa fa-users nav-icon"></i><span class="nav-label">Students</span></a></li>
+      <li><a href="#" onclick="showSection('sitin',this);return false;"><i class="fa fa-desktop nav-icon"></i><span class="nav-label">Current Sit-ins</span><span class="nav-badge" id="nav-sitin-badge" style="display:none;">0</span></a></li>
+      <li><a href="#" onclick="showSection('records',this);return false;"><i class="fa fa-clock-rotate-left nav-icon"></i><span class="nav-label">Records</span></a></li>
+      <li><a href="#" onclick="showSection('reports',this);return false;"><i class="fa fa-file-lines nav-icon"></i><span class="nav-label">Reports</span></a></li>
+      <li><a href="#" onclick="showSection('feedback',this);return false;"><i class="fa fa-comments nav-icon"></i><span class="nav-label">Feedback</span></a></li>
+      <li><a href="#" onclick="showSection('reservation',this);return false;"><i class="fa fa-calendar-check nav-icon"></i><span class="nav-label">Reservations</span><span class="nav-badge" id="nav-reservation-badge" style="display:none;">0</span></a></li>
+      <li><a href="#" onclick="showSection('labsoftware',this);return false;"><i class="fa fa-layer-group nav-icon"></i><span class="nav-label">Lab Software</span></a></li>
+      <li><a href="#" onclick="showSection('leaderboard',this);return false;"><i class="fa fa-trophy nav-icon"></i><span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="#" onclick="showSection('analytics',this);return false;" id="nav-analytics-btn"><i class="fa fa-chart-line nav-icon"></i><span class="nav-label">Analytics</span></a></li>
+      <li><a href="#" onclick="showSection('rewards',this);return false;" id="nav-rewards-btn"><i class="fa fa-gift nav-icon"></i><span class="nav-label">Rewards</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="return adminLogout();"><i class="fa fa-right-from-bracket nav-icon"></i><span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- HOME -->
+    <div id="section-home" class="admin-section" style="display:none;"></div>
+
+    <!-- STUDENTS -->
+    <div id="section-students" class="admin-section" style="display:none;"></div>
+
+    <!-- SIT-IN -->
+    <div id="section-sitin" class="admin-section" style="display:none;"></div>
+
+    <!-- RECORDS -->
+    <div id="section-records" class="admin-section" style="display:none;"></div>
+
+    <!-- REPORTS -->
+    <div id="section-reports" class="admin-section" style="display:none;"></div>
+
+    <!-- FEEDBACK -->
+    <div id="section-feedback" class="admin-section" style="display:none;"></div>
+
+    <!-- RESERVATION -->
+    <div id="section-reservation" class="admin-section" style="display:none;"></div>
+
+    <!-- LAB SOFTWARE -->
+    <div id="section-labsoftware" class="admin-section" style="display:none;"></div>
+
+    <!-- LEADERBOARD -->
+    <div id="section-leaderboard" class="admin-section" style="display:none;"></div>
+
+    <!-- ANALYTICS -->
+    <div id="section-analytics" class="admin-section" style="display:none; height:100%;"></div>
+
+    <!-- REWARDS -->
+    <div id="section-rewards" class="admin-section" style="display:none;"></div>
+
+  </div><!-- /admin-body -->
+
+  <!-- ═══════════════════ SEARCH MODAL ═══════════════════ -->
+  <div id="search-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box search-modal-box" style="width:min(96vw,1100px);">
+      <div class="search-modal-header">
+        <div>
+          <div class="modal-kicker">Quick action</div>
+          <h2 class="modal-title"><i class="fa fa-magnifying-glass"></i> Search Student</h2>
+        </div>
+        <button class="close-modal-btn" onclick="closeSearchModal()" aria-label="Close search"><i class="fa fa-xmark"></i></button>
+      </div>
+      <div class="search-modal-body">
+        <div class="admin-search-bar">
+          <input type="text" id="search-input" placeholder="Search by ID Number or Name..." oninput="renderSearch()"
+            aria-label="Search students"
+            autocomplete="off" />
+          <i class="fa fa-search admin-search-icon"></i>
+        </div>
+        <div class="search-help-row">
+          <span><i class="fa fa-circle-info"></i> Select an available student to start a sit-in.</span>
+          <span id="search-result-count">0 results</span>
+        </div>
+        <div id="search-results" class="search-results">
+          <div class="admin-empty search-empty-state">
+            <i class="fa fa-magnifying-glass"></i>
+            <strong>Search for a student</strong>
+            <span>Use an ID number, first name, or last name.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SIT-IN FORM MODAL ═══════════════════ -->
+  <div id="sitin-modal" class="modal-overlay" style="display:none;">
+    <div class="sitin-modal-box">
+      <div class="modal-header-row">
+        <div class="modal-big-title"><i class="fa fa-desktop"></i> Sit In Form</div>
+        <button class="close-modal-btn" onclick="closeSitinModal()"><i class="fa fa-xmark"></i></button>
+      </div>
+      <div class="sf-row"><span class="sf-label">ID Number:</span><input type="text" id="sf-idnum" class="sf-val"
+          readonly /></div>
+      <div class="sf-row"><span class="sf-label">Student Name:</span><input type="text" id="sf-name" class="sf-val"
+          readonly /></div>
+      <div class="sf-row"><span class="sf-label">Purpose:</span>
+        <select id="sf-purpose" class="sf-val" style="cursor:pointer;">
+          <option value="" disabled selected></option>
+          <option value="C Programming">C Programming</option>
+          <option value="C# Programming">C# Programming</option>
+          <option value="Java Programming">Java Programming</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="Python">Python</option>
+          <option value="PHP">PHP</option>
+          <option value="Database (SQL)">Database (SQL)</option>
+          <option value="Web Development">Web Development</option>
+          <option value="Research / Thesis">Research / Thesis</option>
+          <option value="Others">Others</option>
+        </select>
+      </div>
+      <div class="sf-row"><span class="sf-label">Lab:</span>
+        <select id="sf-lab" class="sf-val" style="cursor:pointer;">
+          <option value="" disabled selected></option>
+          <option value="524">524</option>
+          <option value="526">526</option>
+          <option value="530">530</option>
+          <option value="544">544</option>
+          <option value="517">517</option>
+        </select>
+      </div>
+      <div class="sf-row"><span class="sf-label">Remaining Session:</span><input type="text" id="sf-session"
+          class="sf-val" readonly /></div>
+      <div class="modal-footer">
+        <button class="btn-mclose" onclick="closeSitinModal()">Close</button>
+        <button class="btn-mconfirm" onclick="confirmSitin()">Sit In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ EDIT STUDENT MODAL ═══════════════════ -->
+  <div id="edit-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-prem-box">
+      <div class="modal-prem-header">
+        <div class="modal-prem-title"><i class="fa fa-pen-to-square" style="margin-right:8px;"></i>Edit Student</div>
+        <button class="close-modal-btn" onclick="closeEditModal()" style="color:#fff;"><i
+            class="fa fa-xmark"></i></button>
+      </div>
+      <div class="modal-prem-body">
+        <input type="hidden" id="edit-key" />
+        <div class="mprem-grid">
+          <div class="mprem-fg"><label>First Name</label><input type="text" id="edit-fn" /></div>
+          <div class="mprem-fg"><label>Last Name</label><input type="text" id="edit-ln" /></div>
+          <div class="mprem-fg"><label>Middle Name</label><input type="text" id="edit-mn" /></div>
+          <div class="mprem-fg"><label>Email</label><input type="email" id="edit-em" /></div>
+          <div class="mprem-fg">
+            <label>Year Level</label>
+            <select id="edit-yr">
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+          <div class="mprem-fg"><label>Sessions Remaining</label><input type="number" id="edit-sess" min="0" max="30" />
+          </div>
+          <div class="mprem-fg full">
+            <label>Course</label>
+            <select id="edit-course">
+              <option value="Information Technology">Information Technology</option>
+              <option value="Computer Engineering">Computer Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Industrial Engineering">Industrial Engineering</option>
+              <option value="Criminology">Criminology</option>
+              <option value="Commerce">Commerce</option>
+              <option value="Accountancy">Accountancy</option>
+              <option value="Hotel and Restaurant Management">Hotel and Restaurant Management</option>
+            </select>
+          </div>
+          <div class="mprem-fg full"><label>Address</label><input type="text" id="edit-addr" /></div>
+        </div>
+      </div>
+      <div class="modal-prem-footer">
+        <button class="btn-mprem-cancel" onclick="closeEditModal()">Cancel</button>
+        <button class="btn-mprem-save" onclick="saveEditStudent()"><i class="fa fa-floppy-disk"
+            style="margin-right:5px;"></i>Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CONFIRM DELETE MODAL ═══════════════════ -->
+  <div id="delete-modal" class="modal-overlay" style="display:none;">
+    <div class="confirm-box">
+      <div class="confirm-icon"><i class="fa fa-triangle-exclamation"></i></div>
+      <div class="confirm-title">Delete Student?</div>
+      <div class="confirm-msg" id="del-msg">This cannot be undone.</div>
+      <div class="confirm-footer">
+        <button class="btn-ccancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-cdelete" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ ADD STUDENT MODAL ═══════════════════ -->
+  <div id="add-student-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-prem-box">
+      <div class="modal-prem-header">
+        <div class="modal-prem-title"><i class="fa fa-user-plus" style="margin-right:8px;"></i>Add New Student</div>
+        <button class="close-modal-btn" onclick="closeAddStudentModal()" style="color:#fff;"><i
+            class="fa fa-xmark"></i></button>
+      </div>
+      <div class="modal-prem-body">
+        <div id="add-student-error"
+          style="display:none;color:#dc2626;background:#fef2f2;padding:9px 12px;border-radius:8px;border-left:4px solid #dc2626;font-size:13px;margin-bottom:12px;font-weight:600;">
+        </div>
+        <div class="mprem-grid">
+          <div class="mprem-fg"><label>First Name *</label><input type="text" id="add-fn" /></div>
+          <div class="mprem-fg"><label>Last Name *</label><input type="text" id="add-ln" /></div>
+          <div class="mprem-fg"><label>Middle Name</label><input type="text" id="add-mn" /></div>
+          <div class="mprem-fg"><label>Email *</label><input type="email" id="add-em" /></div>
+          <div class="mprem-fg"><label>ID Number *</label><input type="text" id="add-id" placeholder="e.g. 21412739" />
+          </div>
+          <div class="mprem-fg"><label>Password *</label><input type="password" id="add-pw"
+              placeholder="Min 6 characters" /></div>
+          <div class="mprem-fg">
+            <label>Year Level</label>
+            <select id="add-yr">
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+          <div class="mprem-fg"><label>Sessions</label><input type="number" id="add-sess" value="30" min="0" max="30" />
+          </div>
+          <div class="mprem-fg full">
+            <label>Course</label>
+            <select id="add-course">
+              <option value="Information Technology">Information Technology</option>
+              <option value="Computer Engineering">Computer Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Industrial Engineering">Industrial Engineering</option>
+              <option value="Criminology">Criminology</option>
+              <option value="Commerce">Commerce</option>
+              <option value="Accountancy">Accountancy</option>
+              <option value="Hotel and Restaurant Management">Hotel and Restaurant Management</option>
+            </select>
+          </div>
+          <div class="mprem-fg full"><label>Address</label><input type="text" id="add-addr" /></div>
+        </div>
+      </div>
+      <div class="modal-prem-footer">
+        <button class="btn-mprem-cancel" onclick="closeAddStudentModal()">Cancel</button>
+        <button class="btn-mprem-save" onclick="saveAddStudent()"><i class="fa fa-user-plus"
+            style="margin-right:5px;"></i>Add Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ NOTIFICATION MODAL ═══════════════════ -->
+  <div id="notify-modal" class="modal-overlay notify-overlay" style="display:none;z-index:9999;">
+    <div class="notify-dialog" role="alertdialog" aria-modal="true" aria-labelledby="notify-title" aria-describedby="notify-body">
+      <div id="notify-header" class="notify-header">
+        <div id="notify-icon" class="notify-icon" aria-hidden="true"></div>
+        <div>
+          <div id="notify-title" class="notify-title"></div>
+          <div id="notify-kicker" class="notify-kicker">System message</div>
+        </div>
+        <button type="button" class="notify-close" onclick="closeNotify()" aria-label="Close notification">
+          <i class="fa fa-xmark"></i>
+        </button>
+      </div>
+      <div id="notify-body" class="notify-body"></div>
+      <div class="notify-footer">
+        <button onclick="closeNotify()" id="notify-btn" class="notify-action">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DataTables & Export Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+  <script src="script.js?v=26"></script>
+  <script src="admin.js?v=55"></script>
+</body>
+
+</html>

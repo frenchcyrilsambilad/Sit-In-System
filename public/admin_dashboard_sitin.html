@@ -1,0 +1,40 @@
+      <div class="admin-full-panel">
+        <div class="section-inner">
+
+          <div class="sitin-header">
+            <div class="sitin-title-block">
+              <div class="sitin-title"><i class="fa fa-desktop" style="margin-right:8px;"></i>Current Sit-ins</div>
+              <div class="sitin-subtitle">Monitor active laboratory sessions and time students out</div>
+            </div>
+            <div class="sitin-header-right">
+              <span class="sitin-active-badge" id="sit-active-badge">
+                <span class="pulse-dot"></span>
+                <span id="sit-active-count">0 active</span>
+              </span>
+            </div>
+          </div>
+
+          <div class="sitin-toolbar">
+            <div class="sitin-toolbar-left">
+              <i class="fa fa-table-list"></i>
+              <span>Rows</span>
+              <select id="sit-per-page" onchange="sitPage=1;renderCurrentSitin()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div class="sitin-search-wrap">
+              <i class="fa fa-search"></i>
+              <input type="text" id="sit-search" placeholder="Search by name, ID..."
+                oninput="sitPage=1;renderCurrentSitin()" />
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <div id="sitin-table-wrap"></div>
+          </div>
+          <div class="dt-pagination" id="sit-pagination"></div>
+
+        </div>
+      </div>

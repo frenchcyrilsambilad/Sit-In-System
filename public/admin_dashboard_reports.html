@@ -1,0 +1,39 @@
+      <div class="admin-panel" style="margin:1rem; border-radius:10px; padding: 2rem; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="font-size: 2rem; color: #2e0f66; margin: 0; font-family: 'Raleway', sans-serif; font-weight: 800;">
+            <i class="fa fa-chart-bar" style="margin-right:10px; color:#7c3aed;"></i>Generate Reports
+          </h2>
+        </div>
+        
+        <div style="background: #f8f6fd; padding: 1.5rem; border-radius: 12px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; border: 1px solid #ede8fb;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-weight: 700; color: #4a1d8f; font-size: 14px;">Filter by Date:</label>
+            <input type="date" id="report-date-filter" style="padding: 10px 15px; border: 1.5px solid #d1c4e9; border-radius: 8px; font-family: 'Nunito', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#d1c4e9'"/>
+          </div>
+          <button onclick="applyReportFilter()" class="btn-report-search" style="background: #3498db; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 800; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(52,152,219,0.2);">
+            <i class="fa fa-search" style="margin-right: 5px;"></i>Search
+          </button>
+          <button onclick="resetReportFilter()" class="btn-report-reset" style="background: #e74c3c; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 800; font-family: 'Nunito', sans-serif; font-size: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(231,76,60,0.2);">
+            <i class="fa fa-rotate-left" style="margin-right: 5px;"></i>Reset
+          </button>
+        </div>
+
+        <div class="admin-panel-body" style="background: #fff; border-radius: 12px; border: 1px solid #ede8fb; padding: 1.5rem;">
+          <table id="reports-datatable" class="display records-table" style="width:100%">
+            <thead>
+              <tr>
+                <th>ID Number</th>
+                <th>Name</th>
+                <th>Purpose</th>
+                <th>Laboratory</th>
+                <th>Login</th>
+                <th>Logout</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data dynamically injected -->
+            </tbody>
+          </table>
+        </div>
+      </div>

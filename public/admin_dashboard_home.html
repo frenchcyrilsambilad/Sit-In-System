@@ -1,0 +1,79 @@
+<div class="admin-overview">
+  <div class="overview-hero">
+    <div>
+      <div class="overview-eyebrow">Admin Overview</div>
+      <h1>Dashboard</h1>
+      <p>Monitor sit-in activity, student usage, and announcements from one workspace.</p>
+    </div>
+    <button class="overview-search-btn" onclick="openSearchModal()">
+      <i class="fa fa-magnifying-glass"></i>
+      Search Student
+    </button>
+  </div>
+
+  <div class="overview-stats-grid">
+    <div class="overview-stat-card">
+      <div class="overview-stat-icon"><i class="fa fa-users"></i></div>
+      <div>
+        <span>Registered Students</span>
+        <strong id="stat-registered">0</strong>
+      </div>
+    </div>
+    <div class="overview-stat-card">
+      <div class="overview-stat-icon active"><i class="fa fa-desktop"></i></div>
+      <div>
+        <span>Currently Sitting In</span>
+        <strong id="stat-current">0</strong>
+      </div>
+    </div>
+    <div class="overview-stat-card">
+      <div class="overview-stat-icon total"><i class="fa fa-clock-rotate-left"></i></div>
+      <div>
+        <span>Total Sit-ins</span>
+        <strong id="stat-total">0</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="overview-main-grid">
+    <section class="overview-panel overview-chart-panel">
+      <div class="overview-panel-header">
+        <div>
+          <span>Purpose Distribution</span>
+          <small>Active sit-in sessions by purpose</small>
+        </div>
+      </div>
+      <div class="overview-chart-wrap">
+        <canvas id="courseChart"></canvas>
+      </div>
+    </section>
+
+    <section class="overview-panel overview-announcements-panel">
+      <div class="overview-panel-header">
+        <div>
+          <span>Announcements</span>
+          <small>Post and manage student notices</small>
+        </div>
+        <span class="overview-count-pill" id="admin-announce-count"></span>
+      </div>
+
+      <div class="overview-compose">
+        <textarea id="new-announcement" placeholder="Write a concise announcement for students..."></textarea>
+        <div id="announce-error" class="overview-form-error">
+          <i class="fa fa-triangle-exclamation"></i> Announcement cannot be empty.
+        </div>
+        <button class="overview-primary-btn" onclick="postAnnouncement()">
+          <i class="fa fa-paper-plane"></i>
+          Post Announcement
+        </button>
+      </div>
+
+      <div class="overview-search">
+        <i class="fa fa-search"></i>
+        <input id="admin-announce-search" type="text" placeholder="Search announcements..." oninput="filterAdminAnnouncements(this.value)" />
+      </div>
+
+      <div id="admin-announce-list" class="overview-announcement-list"></div>
+    </section>
+  </div>
+</div>

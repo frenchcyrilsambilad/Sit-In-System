@@ -1,0 +1,97 @@
+      <div class="admin-full-panel">
+        <div class="section-inner">
+
+          <div class="records-header">
+            <div class="records-title-block">
+              <div class="records-title"><i class="fa fa-table-list" style="margin-right:8px;"></i>Sit-in Records</div>
+              <div class="records-subtitle">Historical log of all completed sessions</div>
+            </div>
+            <span class="records-count-badge" id="rec-count-badge">0 records</span>
+          </div>
+
+          <div class="records-overview" id="rec-overview" style="display:none;">
+            <div class="records-stat-card">
+              <span class="records-stat-icon sessions"><i class="fa fa-desktop"></i></span>
+              <div>
+                <strong id="rec-total-completed">0</strong>
+                <span>Total Completed Sessions</span>
+              </div>
+            </div>
+            <div class="records-stat-card">
+              <span class="records-stat-icon students"><i class="fa fa-user"></i></span>
+              <div>
+                <strong id="rec-unique-students">0</strong>
+                <span>Unique Students</span>
+              </div>
+            </div>
+            <div class="records-stat-card wide">
+              <span class="records-stat-icon purpose"><i class="fa fa-clock"></i></span>
+              <div>
+                <strong id="rec-common-purpose">-</strong>
+                <span>Most Common Purpose</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="record-charts-wrap" id="rec-charts" style="display:none;">
+            <div class="record-chart-card">
+              <div class="record-chart-title">Sessions by Purpose</div>
+              <div class="record-chart-canvas"><canvas id="recPurposeChart"></canvas></div>
+            </div>
+            <div class="record-chart-card">
+              <div class="record-chart-title">Sessions by Lab Room</div>
+              <div class="record-chart-canvas"><canvas id="recLabChart"></canvas></div>
+            </div>
+            <div class="record-chart-card">
+              <div class="record-chart-title">Sessions by Course</div>
+              <div class="record-chart-canvas"><canvas id="recCourseChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="records-list-panel">
+            <div class="records-list-header">
+              <div class="records-list-title">
+                <i class="fa fa-file-lines"></i>
+                <span>Completed Sit-In Records</span>
+              </div>
+              <span class="records-count-badge" id="rec-table-count">0 records</span>
+            </div>
+            <div class="records-toolbar">
+              <div class="records-toolbar-left">
+                Show
+                <select id="rec-per-page" onchange="recPage=1;renderRecords()">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                entries
+              </div>
+              <div class="records-quick-filters" aria-label="Record quick filters">
+                <button class="rec-filter-btn active" data-rec-filter="done" onclick="setRecordQuickFilter('done', this)">Done</button>
+                <button class="rec-filter-btn" data-rec-filter="today" onclick="setRecordQuickFilter('today', this)">Today</button>
+                <button class="rec-filter-btn" data-rec-filter="week" onclick="setRecordQuickFilter('week', this)">This Week</button>
+                <button class="rec-filter-btn" data-rec-filter="active" onclick="setRecordQuickFilter('active', this)">Active</button>
+                <button class="rec-filter-btn" data-rec-filter="reserved" onclick="setRecordQuickFilter('reserved', this)">Reserved</button>
+                <button class="rec-filter-btn" data-rec-filter="all" onclick="setRecordQuickFilter('all', this)">All</button>
+                <select id="rec-lab-filter" onchange="recPage=1;renderRecords()">
+                  <option value="">All Labs</option>
+                </select>
+              </div>
+              <div class="records-search-wrap">
+                <i class="fa fa-search"></i>
+                <input type="text" id="rec-search" placeholder="Search records..." oninput="recPage=1;renderRecords()" />
+              </div>
+              <div class="records-export-actions">
+                <button class="records-export-btn" onclick="exportRecordsCsv()"><i class="fa fa-file-csv"></i> CSV</button>
+                <button class="records-export-btn" onclick="printRecordsTable()"><i class="fa fa-print"></i> Print</button>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <div id="records-table-wrap"></div>
+            </div>
+            <div class="dt-pagination" id="rec-pagination"></div>
+          </div>
+
+        </div>
+      </div>

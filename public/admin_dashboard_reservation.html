@@ -1,0 +1,556 @@
+      <style>
+        /* ═══ PC GRID HARD OVERRIDES (bypass any cached admin.css) ═══ */
+        #admin-pc-grid {
+          display: grid !important;
+          grid-template-columns: repeat(8, 1fr) !important;
+          gap: 0.6rem !important;
+        }
+        #admin-pc-grid .resv-pc-cell {
+          min-height: 86px !important;
+          padding: 0.65rem 0.3rem !important;
+          gap: 4px !important;
+          overflow: hidden !important;
+        }
+        #admin-pc-grid .resv-pc-cell i {
+          font-size: 1.3rem !important;
+        }
+        #admin-pc-grid .pc-num {
+          font-size: 0.7rem !important;
+          font-weight: 800 !important;
+          color: rgba(255,255,255,0.55) !important;
+          letter-spacing: 0.03em !important;
+        }
+        #admin-pc-grid .pc-status-text {
+          display: block !important;
+          font-size: 0.62rem !important;
+          font-weight: 700 !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.07em !important;
+          line-height: 1 !important;
+          color: rgba(255,255,255,0.6) !important;
+        }
+        /* Per-state status label colors */
+        #admin-pc-grid .resv-pc-cell.available   .pc-status-text { color: #34d399 !important; }
+        #admin-pc-grid .resv-pc-cell.reserved    .pc-status-text { color: #fbbf24 !important; }
+        #admin-pc-grid .resv-pc-cell.active-pc   .pc-status-text { color: #60a5fa !important; }
+        #admin-pc-grid .resv-pc-cell.blocked     .pc-status-text { color: rgba(255,255,255,0.22) !important; }
+        /* Brighter icon colors per state */
+        #admin-pc-grid .resv-pc-cell.available   i { color: #34d399 !important; }
+        #admin-pc-grid .resv-pc-cell.reserved    i { color: #fbbf24 !important; }
+        #admin-pc-grid .resv-pc-cell.active-pc   i { color: #60a5fa !important; }
+        @media (max-width: 900px) {
+          #admin-pc-grid { grid-template-columns: repeat(5, 1fr) !important; }
+        }
+        @media (max-width: 600px) {
+          #admin-pc-grid { grid-template-columns: repeat(4, 1fr) !important; }
+        }
+
+        .resv-pending-page {
+          width: min(100% - 32px, 1240px);
+          max-width: 1240px;
+          margin: 0 auto;
+          padding: 22px 0 34px;
+        }
+
+        .resv-pending-hero {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 16px;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .resv-pending-kicker {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          margin-bottom: 8px;
+          color: var(--admin-muted, #6f5c8f);
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+        }
+
+        .resv-pending-hero h2 {
+          margin: 0;
+          color: var(--admin-text, #24104f);
+          font-size: clamp(1.7rem, 2.5vw, 2.45rem);
+          font-weight: 1000;
+          letter-spacing: -.03em;
+          line-height: 1.05;
+        }
+
+        .resv-pending-hero p {
+          max-width: 620px;
+          margin: 8px 0 0;
+          color: var(--admin-muted, #6f5c8f);
+          font-size: 14px;
+          font-weight: 750;
+          line-height: 1.55;
+        }
+
+        .resv-pending-count-card {
+          min-width: 132px;
+          min-height: 86px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #e5dcfb;
+          border-radius: 16px;
+          background: #fff;
+          box-shadow: 0 12px 30px rgba(32, 17, 63, .06);
+        }
+
+        .resv-pending-count-card span {
+          color: var(--admin-muted, #6f5c8f);
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+
+        .resv-pending-count-card strong {
+          margin-top: 4px;
+          color: var(--admin-purple, #341070);
+          font-size: 2rem;
+          font-weight: 1000;
+          line-height: 1;
+        }
+
+        .resv-pending-panel {
+          margin: 0 !important;
+          overflow: hidden;
+        }
+
+        .resv-pending-panel .resv-pending-list {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 16px;
+          background: #fff;
+        }
+
+        .resv-checkin-box {
+          width: min(94vw, 430px) !important;
+          border-radius: 16px !important;
+          overflow: hidden;
+        }
+
+        .resv-checkin-box {
+          border: 0 !important;
+          background: #341070 !important;
+          box-shadow: 0 28px 80px rgba(35, 9, 78, .28) !important;
+        }
+
+        .resv-checkin-top {
+          position: relative;
+          overflow: hidden;
+          padding: 22px 24px 24px;
+          background: linear-gradient(135deg, #2a0b5f 0%, #3b1280 100%);
+          color: #fff;
+        }
+
+        .resv-checkin-top::after {
+          content: "";
+          position: absolute;
+          width: 170px;
+          height: 170px;
+          right: -70px;
+          top: -70px;
+          border-radius: 50%;
+          background: rgba(245, 166, 35, .18);
+        }
+
+        .resv-checkin-toprow {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 16px;
+        }
+
+        .resv-checkin-kicker {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin-bottom: 10px;
+          color: #ffd66b;
+          font-size: 11px;
+          font-weight: 950;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+
+        .resv-checkin-icon {
+          width: 54px;
+          height: 54px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex: 0 0 auto;
+          border: 1px solid rgba(255, 255, 255, .22);
+          border-radius: 16px;
+          background: rgba(255, 255, 255, .12);
+          color: #ffd66b;
+          font-size: 1.35rem;
+        }
+
+        .resv-checkin-title {
+          margin: 0;
+          color: #fff;
+          font-size: 1.45rem;
+          font-weight: 1000;
+          line-height: 1.15;
+        }
+
+        .resv-checkin-msg {
+          position: relative;
+          z-index: 1;
+          max-width: 340px;
+          margin: 8px 0 0;
+          color: rgba(255, 255, 255, .78);
+          font-size: 14px;
+          font-weight: 750;
+          line-height: 1.55;
+        }
+
+        .resv-checkin-body {
+          padding: 18px 24px 16px;
+          text-align: left;
+        }
+
+        .resv-checkin-footer {
+          display: flex;
+          justify-content: flex-end;
+          gap: 10px;
+          padding: 0 24px 22px;
+          background: #341070;
+        }
+
+        .resv-checkin-cancel,
+        .resv-checkin-confirm {
+          min-height: 40px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 10px 16px;
+          border-radius: 9px;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 950;
+          cursor: pointer;
+        }
+
+        .resv-checkin-cancel {
+          border: 1px solid rgba(255, 255, 255, .22);
+          background: rgba(255, 255, 255, .08);
+          color: #fff;
+        }
+
+        .resv-checkin-confirm {
+          border: 0;
+          background: #f5a623;
+          color: #270747;
+          box-shadow: 0 10px 22px rgba(245, 166, 35, .18);
+        }
+
+        .resv-checkin-confirm:hover {
+          background: #ffbd3d;
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 760px) {
+          .resv-pending-page {
+            width: min(100% - 20px, 1240px);
+            padding-top: 16px;
+          }
+
+          .resv-pending-hero {
+            grid-template-columns: 1fr;
+          }
+
+          .resv-pending-count-card {
+            align-items: flex-start;
+            min-height: 74px;
+            padding: 14px;
+          }
+        }
+      </style>
+
+      <div class="admin-full-panel">
+        <div class="section-inner">
+
+          <!-- Gradient header -->
+          <div class="records-header resv-header">
+            <div class="records-title-block">
+              <div class="records-title"><i class="fa fa-calendar-check" style="margin-right:8px;"></i>Reservation Management</div>
+              <div class="records-subtitle">Manage PC reservations, approve requests, and track history</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+              <!-- Toggle Reservation Status -->
+              <div class="resv-status-toggle" id="resv-toggle-wrap">
+                <div class="resv-toggle-dot" id="resv-toggle-dot"></div>
+                <span id="resv-toggle-label">Reservations OPEN</span>
+                <button class="resv-toggle-btn" id="resv-toggle-btn" onclick="toggleReservationSystem()" title="Toggle reservation system">
+                  <i class="fa fa-power-off"></i>
+                </button>
+              </div>
+              <span class="records-count-badge" id="resv-count-badge">0 reservations</span>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="resv-tabs">
+            <button class="resv-tab active" id="tab-status" onclick="switchResvTab('status')">
+              <i class="fa fa-desktop"></i> Reservation Status
+            </button>
+            <button class="resv-tab" id="tab-pending" onclick="switchResvTab('pending')">
+              <i class="fa fa-inbox"></i> Pending Requests <span class="resv-tab-badge" id="pending-count-badge" style="display:none;">0</span>
+            </button>
+            <button class="resv-tab" id="tab-requests" onclick="switchResvTab('requests')">
+              <i class="fa fa-list-check"></i> All Reservations
+            </button>
+            <button class="resv-tab" id="tab-history" onclick="switchResvTab('history')">
+              <i class="fa fa-clock-rotate-left"></i> Log / History
+            </button>
+          </div>
+
+          <!-- ══════════ TAB 1: RESERVATION STATUS ══════════ -->
+          <div class="resv-tab-content" id="tab-content-status" style="padding: 1rem; background: #eeeaf7;">
+
+            <div style="display: grid; grid-template-columns: 340px 1fr; gap: 1rem; align-items: start;">
+              
+              <!-- Left Column: Filters Card -->
+              <div class="resv-section-card" style="margin: 0; box-shadow: 0 8px 40px rgba(74,29,143,0.13); border: 1px solid rgba(74,29,143,0.07); border-radius: 16px;">
+                <div class="resv-section-title" style="background: #4a1d8f; color: #fff; padding: 0.75rem 1.2rem; font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase;">
+                  <i class="fa fa-filter" style="color: #e8a817;"></i> Lab & Time Selection
+                </div>
+                <div style="padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem;">
+                  
+                  <div class="resv-filter-group" style="gap: 6px;">
+                    <label style="font-size: 0.78rem; font-weight: 700; color: #333; text-transform: none; letter-spacing: normal;"><i class="fa fa-laptop" style="color:#7c3aed;"></i> Laboratory</label>
+                    <div class="resv-lab-pills" id="admin-lab-pills" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                      <button class="resv-lab-pill active" onclick="adminSelectLab('524',this)" style="padding: 0.4rem; text-align: center;">Lab 524</button>
+                      <button class="resv-lab-pill" onclick="adminSelectLab('526',this)" style="padding: 0.4rem; text-align: center;">Lab 526</button>
+                      <button class="resv-lab-pill" onclick="adminSelectLab('528',this)" style="padding: 0.4rem; text-align: center;">Lab 528</button>
+                      <button class="resv-lab-pill" onclick="adminSelectLab('530',this)" style="padding: 0.4rem; text-align: center;">Lab 530</button>
+                      <button class="resv-lab-pill" onclick="adminSelectLab('542',this)" style="padding: 0.4rem; text-align: center;">Lab 542</button>
+                      <button class="resv-lab-pill" onclick="adminSelectLab('544',this)" style="padding: 0.4rem; text-align: center;">Lab 544</button>
+                    </div>
+                  </div>
+
+                  <div class="resv-filter-group" style="gap: 6px;">
+                    <label style="font-size: 0.78rem; font-weight: 700; color: #333; text-transform: none; letter-spacing: normal;"><i class="fa fa-calendar" style="color:#7c3aed;"></i> Date</label>
+                    <input type="date" id="admin-resv-date" onchange="loadAdminPCGrid()" style="width: 100%; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1.5px solid #d1c4e9; background: #faf9ff;" />
+                  </div>
+
+                  <div class="resv-filter-group" style="gap: 6px;">
+                    <label style="font-size: 0.78rem; font-weight: 700; color: #333; text-transform: none; letter-spacing: normal;"><i class="fa fa-clock" style="color:#7c3aed;"></i> Time Slot</label>
+                    <select id="admin-resv-timeslot" onchange="loadAdminPCGrid()" style="width: 100%; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1.5px solid #d1c4e9; background: #faf9ff;">
+                      <option value="">All Time Slots</option>
+                      <option value="7:00 AM - 8:00 AM">7:00 AM - 8:00 AM</option>
+                      <option value="8:00 AM - 9:00 AM">8:00 AM - 9:00 AM</option>
+                      <option value="9:00 AM - 10:00 AM">9:00 AM - 10:00 AM</option>
+                      <option value="10:00 AM - 11:00 AM">10:00 AM - 11:00 AM</option>
+                      <option value="11:00 AM - 12:00 PM">11:00 AM - 12:00 PM</option>
+                      <option value="1:00 PM - 2:00 PM">1:00 PM - 2:00 PM</option>
+                      <option value="2:00 PM - 3:00 PM">2:00 PM - 3:00 PM</option>
+                      <option value="3:00 PM - 4:00 PM">3:00 PM - 4:00 PM</option>
+                      <option value="4:00 PM - 5:00 PM">4:00 PM - 5:00 PM</option>
+                      <option value="5:00 PM - 6:00 PM">5:00 PM - 6:00 PM</option>
+                    </select>
+                  </div>
+                  
+                  <div style="padding: 1rem; background: #f0ebff; border-radius: 8px; border-left: 3px solid #7c3aed; margin-top: 0.5rem;">
+                     <div style="font-size: 0.75rem; color: #4a1d8f; font-weight: 700;"><i class="fa fa-info-circle" style="color: #7c3aed;"></i> Select lab and time slot to view live PC availability for admin controls.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: PC Grid & Pending Requests -->
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                
+                <!-- PC Grid Card -->
+                <div class="resv-section-card" style="margin: 0; box-shadow: 0 8px 40px rgba(10,5,30,0.4); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; background: #1a1035;">
+                  <!-- PC Grid Legend -->
+                  <div class="resv-grid-legend">
+                    <span class="resv-legend-chip avail"><span class="resv-ldot"></span> Available</span>
+                    <span class="resv-legend-chip selected"><span class="resv-ldot"></span> Selected</span>
+                    <span class="resv-legend-chip reserved"><span class="resv-ldot"></span> Reserved</span>
+                    <span class="resv-legend-chip active"><span class="resv-ldot"></span> Active</span>
+                  </div>
+
+                  <!-- PC Grid Area -->
+                  <div class="resv-pc-grid-area" style="border-radius: 0 0 16px 16px; margin: 0; box-shadow: none;">
+                    
+                    <!-- Instructor Desk -->
+                    <div class="instructor-desk-bar" style="background: rgba(232,168,23,0.12); border: 1.5px solid rgba(232,168,23,0.25); border-radius: 10px; color: rgba(232,168,23,0.9); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.15em; text-align: center; padding: 0.6rem; text-transform: uppercase; margin-bottom: 1rem;">
+                      <i class="fa fa-chalkboard-teacher" style="margin-right: 6px;"></i> INSTRUCTOR'S DESK
+                    </div>
+
+                    <div class="resv-grid-title-bar">
+                      <div class="resv-grid-title"><i class="fa fa-desktop" style="color:#e8a817;margin-right:6px;"></i> <span id="admin-grid-lab">Lab 524</span> — PC Availability</div>
+                      <div class="resv-grid-stats">
+                        <span class="resv-stat-chip green"><i class="fa fa-check-circle"></i> <span id="admin-avail-count">0</span> Available</span>
+                        <span class="resv-stat-chip yellow"><i class="fa fa-clock"></i> <span id="admin-reserved-count">0</span> Reserved</span>
+                        <span class="resv-stat-chip blue"><i class="fa fa-bolt"></i> <span id="admin-active-count">0</span> Active</span>
+                      </div>
+                    </div>
+                    <div class="resv-pc-grid" id="admin-pc-grid">
+                      <div class="resv-pc-placeholder">
+                        <i class="fa fa-desktop" style="font-size:2.5rem;color:rgba(255,255,255,0.15);"></i>
+                        <span>Select a date and time slot to view PC availability</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- ══════════ TAB 2: ALL RESERVATIONS ══════════ -->
+          <div class="resv-tab-content" id="tab-content-pending" style="display:none;">
+            <div class="resv-pending-page">
+              <div class="resv-pending-hero">
+                <div>
+                  <div class="resv-pending-kicker"><i class="fa fa-inbox"></i> Approval queue</div>
+                  <h2>Pending Requests</h2>
+                  <p>Review reservation requests that need action before they move into the live PC status board.</p>
+                </div>
+                <div class="resv-pending-count-card">
+                  <span>Waiting</span>
+                  <strong id="pending-badge">0</strong>
+                </div>
+              </div>
+
+              <div class="resv-section-card resv-pending-panel">
+                <div class="resv-section-title">
+                  <i class="fa fa-list-check" style="color:#7c3aed;"></i> Requests Needing Action
+                </div>
+                <div class="resv-pending-list" id="resv-pending-list">
+                  <div class="resv-empty-state">
+                    <i class="fa fa-check-double"></i>
+                    <strong>No pending requests</strong>
+                    <span>All reservation requests have been processed.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="resv-tab-content" id="tab-content-requests" style="display:none;">
+
+            <!-- All Reservations Table -->
+            <div class="resv-section-card" style="margin-top:1rem;">
+              <div class="resv-section-title">
+                <i class="fa fa-list-check" style="color:#7c3aed;"></i> All Reservations
+              </div>
+              <div class="resv-all-toolbar">
+                <div class="resv-all-toolbar-left">
+                  Show
+                  <select id="resv-per-page" onchange="resvPage=1;renderAllReservations()">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                  </select>
+                  entries
+                </div>
+                <div class="resv-all-toolbar-right">
+                  <div class="records-search-wrap">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="resv-all-search" placeholder="Search reservations..." oninput="resvPage=1;renderAllReservations()" />
+                  </div>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <div id="resv-all-table-wrap"></div>
+              </div>
+              <div class="dt-pagination" id="resv-all-pagination"></div>
+            </div>
+          </div>
+
+          <!-- ══════════ TAB 3: LOG / HISTORY ══════════ -->
+          <div class="resv-tab-content" id="tab-content-history" style="display:none;">
+            <div class="resv-section-card">
+              <div class="resv-section-title">
+                <i class="fa fa-clock-rotate-left" style="color:#7c3aed;"></i> Reservation Log History
+              </div>
+              <div class="resv-all-toolbar">
+                <div class="resv-all-toolbar-left">
+                  <div class="resv-filter-group" style="flex-direction:row;align-items:center;gap:6px;">
+                    <label style="margin:0;"><i class="fa fa-filter"></i> Filter:</label>
+                    <select id="resv-log-filter" onchange="logPage=1;renderLogHistory()">
+                      <option value="">All</option>
+                      <option value="Reserved">Reserved</option>
+                      <option value="Active">Active</option>
+                      <option value="Done">Done</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div class="resv-filter-group" style="flex-direction:row;align-items:center;gap:6px;">
+                    <label style="margin:0;"><i class="fa fa-calendar"></i> Date:</label>
+                    <input type="date" id="resv-log-date" onchange="logPage=1;renderLogHistory()" />
+                  </div>
+                  <button class="resv-reset-btn" onclick="resetLogFilters()"><i class="fa fa-rotate-left"></i> Reset</button>
+                </div>
+                <div class="resv-all-toolbar-right">
+                  <div class="records-search-wrap">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="resv-log-search" placeholder="Search log..." oninput="logPage=1;renderLogHistory()" />
+                  </div>
+                </div>
+              </div>
+              <div class="table-scroll">
+                <div id="resv-log-table-wrap"></div>
+              </div>
+              <div class="dt-pagination" id="resv-log-pagination"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Reservation Detail Modal -->
+      <div class="modal-overlay resv-detail-modal" id="resv-detail-modal" style="display:none;">
+        <div class="modal-prem-box" style="width:min(96vw,480px);">
+          <div class="modal-prem-header">
+            <div class="modal-prem-title"><i class="fa fa-calendar-check" style="margin-right:8px;"></i>Reservation Details</div>
+            <button class="close-modal-btn" onclick="closeResvDetailModal()" style="color:#fff;"><i class="fa fa-xmark"></i></button>
+          </div>
+          <div class="modal-prem-body" id="resv-detail-body">
+            <!-- Populated by JS -->
+          </div>
+          <div class="modal-prem-footer" id="resv-detail-footer">
+            <button class="btn-mprem-cancel" onclick="closeResvDetailModal()">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Check-in Confirmation Modal -->
+      <div class="modal-overlay" id="resv-checkin-modal" style="display:none;">
+        <div class="modal-prem-box resv-checkin-box">
+          <div class="resv-checkin-top">
+            <div class="resv-checkin-toprow">
+              <div>
+                <div class="resv-checkin-kicker"><i class="fa fa-calendar-check"></i> Reservation action</div>
+                <h3 class="resv-checkin-title">Check in student?</h3>
+              </div>
+              <div class="resv-checkin-icon"><i class="fa fa-right-to-bracket"></i></div>
+            </div>
+            <p class="resv-checkin-msg">Start their sit-in session now.</p>
+          </div>
+          <div class="resv-checkin-footer">
+            <button type="button" class="resv-checkin-cancel" onclick="closeCheckinReservationModal()">
+              <i class="fa fa-xmark"></i> Cancel
+            </button>
+            <button type="button" class="resv-checkin-confirm" id="resv-checkin-confirm-btn" onclick="confirmCheckinReservation()">
+              <i class="fa fa-check"></i> Check In
+            </button>
+          </div>
+        </div>
+      </div>

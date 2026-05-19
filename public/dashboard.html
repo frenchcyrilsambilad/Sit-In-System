@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | Dashboard</title>
+  <link rel="stylesheet" href="style.css?v=21" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @keyframes fadeSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #student-announcements::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #student-announcements::-webkit-scrollbar-track {
+      background: #f1f0f8;
+      border-radius: 3px;
+    }
+
+    #student-announcements::-webkit-scrollbar-thumb {
+      background: var(--purple-mid, #6b3ab5);
+      border-radius: 3px;
+    }
+
+    #admin-announce-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #admin-announce-list::-webkit-scrollbar-track {
+      background: #f1f0f8;
+      border-radius: 3px;
+    }
+
+    #admin-announce-list::-webkit-scrollbar-thumb {
+      background: var(--purple-mid, #6b3ab5);
+      border-radius: 3px;
+    }
+  </style>
+  <link rel="stylesheet" href="user-theme.css?v=16" />
+</head>
+
+<body class="dashboard-body student-shell student-home-page">
+
+  <!-- DASHBOARD NAVBAR -->
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge"
+              style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html" class="active"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+
+  <!-- DASHBOARD LAYOUT -->
+  <main class="student-home-main">
+    <section class="student-home-hero" aria-label="Student home overview">
+      <div class="student-home-welcome">
+        <span class="student-home-kicker"><i class="fa fa-circle-check"></i> Student Portal</span>
+        <h1 id="home-greeting">Welcome back</h1>
+        <p>Check announcements, review your remaining sessions, and manage your sit-in activity from one place.</p>
+        <div class="student-home-pills" aria-label="Student quick details">
+          <span><i class="fa fa-id-card"></i> <b id="home-id">-</b></span>
+          <span><i class="fa fa-layer-group"></i> <b id="home-level">-</b></span>
+          <span><i class="fa fa-circle"></i> Active account</span>
+        </div>
+        <div class="student-glance-grid" aria-label="Today at a glance">
+          <div class="student-glance-card">
+            <span class="student-glance-icon"><i class="fa fa-clock"></i></span>
+            <div>
+              <small>Remaining Sessions</small>
+              <strong><span id="glance-session-count">30</span> left</strong>
+              <em id="glance-session-note">Ready for your next sit-in.</em>
+            </div>
+          </div>
+          <div class="student-glance-card">
+            <span class="student-glance-icon reservation"><i class="fa fa-calendar-check"></i></span>
+            <div>
+              <small>Next Reservation</small>
+              <strong id="glance-reservation-title">None scheduled</strong>
+              <em id="glance-reservation-meta">Reserve a lab when you are ready.</em>
+            </div>
+          </div>
+          <div class="student-glance-card">
+            <span class="student-glance-icon status"><i class="fa fa-circle-check"></i></span>
+            <div>
+              <small>Current Status</small>
+              <strong id="glance-status-title">Ready</strong>
+              <em id="glance-status-meta">No active sit-in right now.</em>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="student-home-metrics" aria-label="Quick account summary">
+        <div class="home-metric-card">
+          <div class="home-metric-icon"><i class="fa fa-clock"></i></div>
+          <div class="home-metric-copy">
+            <span>Remaining Sessions</span>
+            <strong id="home-session">30</strong>
+          </div>
+        </div>
+        <div class="home-metric-card">
+          <div class="home-metric-icon"><i class="fa fa-graduation-cap"></i></div>
+          <div class="home-metric-copy">
+            <span>Course</span>
+            <strong id="home-course">-</strong>
+          </div>
+        </div>
+        <div class="home-metric-card">
+          <div class="home-metric-icon"><i class="fa fa-layer-group"></i></div>
+          <div class="home-metric-copy">
+            <span>Year Level</span>
+            <strong id="home-year">-</strong>
+          </div>
+        </div>
+        <div class="home-metric-card">
+          <div class="home-metric-icon"><i class="fa fa-user-check"></i></div>
+          <div class="home-metric-copy">
+            <span>Status</span>
+            <strong>Ready</strong>
+          </div>
+        </div>
+      </div>
+      <div class="student-home-actions" aria-label="Quick actions">
+        <div class="home-actions-head">
+          <span>Quick Actions</span>
+          <strong>Next step</strong>
+        </div>
+        <a href="reservation.html" class="home-action primary"><i class="fa fa-calendar-check"></i> Reserve Lab</a>
+        <a href="labstatus.html" class="home-action"><i class="fa fa-desktop"></i> View Lab Status</a>
+        <a href="summary.html" class="home-action"><i class="fa fa-chart-simple"></i> My Summary</a>
+      </div>
+    </section>
+  </main>
+
+  <section class="student-activity-row" aria-label="Student activity overview">
+    <div class="student-activity-card">
+      <div class="student-activity-head">
+        <span><i class="fa fa-calendar-check"></i> Reservation Reminders</span>
+      </div>
+      <div id="student-reservation-reminders" class="student-activity-list">
+        <div class="student-activity-empty">No upcoming reservations.</div>
+      </div>
+    </div>
+    <div class="student-activity-card">
+      <div class="student-activity-head">
+        <span><i class="fa fa-clock-rotate-left"></i> Recent Activity</span>
+      </div>
+      <div id="student-activity-timeline" class="student-activity-list">
+        <div class="student-activity-empty">No recent activity yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="dash-layout">
+
+    <!-- LEFT: Student Information -->
+    <aside class="dash-col dash-left">
+
+      <!-- Profile Card -->
+      <div class="si-card">
+        <div class="si-card-banner">
+          <div class="si-avatar-ring">
+            <img src="static/temppfp.jpg" alt="Profile" class="student-avatar" id="dash-avatar" />
+          </div>
+          <div class="si-name" id="dash-name">-</div>
+          <div class="si-course-badge" id="dash-course-badge">-</div>
+        </div>
+
+        <div class="si-session-bar">
+          <i class="fa fa-clock"></i>
+          <span>Remaining Sessions</span>
+          <strong id="dash-session">30</strong>
+        </div>
+
+        <div class="si-fields">
+          <div class="si-field">
+            <div class="si-field-icon"><i class="fa fa-graduation-cap"></i></div>
+            <div class="si-field-text">
+              <span class="si-field-label">Course</span>
+              <span class="si-field-val" id="dash-course">-</span>
+            </div>
+          </div>
+          <div class="si-field">
+            <div class="si-field-icon"><i class="fa fa-layer-group"></i></div>
+            <div class="si-field-text">
+              <span class="si-field-label">Year Level</span>
+              <span class="si-field-val" id="dash-year">-</span>
+            </div>
+          </div>
+          <div class="si-field">
+            <div class="si-field-icon"><i class="fa fa-envelope"></i></div>
+            <div class="si-field-text">
+              <span class="si-field-label">Email</span>
+              <span class="si-field-val" id="dash-email">-</span>
+            </div>
+          </div>
+          <div class="si-field">
+            <div class="si-field-icon"><i class="fa fa-location-dot"></i></div>
+            <div class="si-field-text">
+              <span class="si-field-label">Address</span>
+              <span class="si-field-val" id="dash-address">-</span>
+            </div>
+          </div>
+        </div>
+
+        <a href="editprofile.html" class="si-edit-btn">
+          <i class="fa fa-pen-to-square"></i> Edit Profile
+        </a>
+      </div>
+
+    </aside>
+
+    <!-- CENTER: Announcement -->
+    <section class="dash-col dash-center">
+      <div class="dash-panel" style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+        <div class="dash-panel-header announce-panel-header">
+          <span><i class="fa fa-bullhorn"></i> Announcements</span>
+          <span id="announce-count"
+            style="font-size:12px;font-weight:600;background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:20px;"></span>
+        </div>
+
+        <!-- Search bar -->
+        <div class="announce-search-row">
+          <div class="announce-search-wrap">
+            <i class="fa fa-search"></i>
+            <input id="announce-search" type="text" placeholder="Search announcements..."
+              oninput="filterAnnouncements(this.value)" />
+          </div>
+        </div>
+
+        <!-- Announcement list ” scrollable -->
+        <div id="student-announcements">
+          <div
+            style="display:flex;align-items:center;justify-content:center;height:100%;color:#a78bca;font-style:italic;font-size:14px;">
+            <i class="fa fa-spinner fa-spin" style="margin-right:8px;"></i> Loading announcements...
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Rules and Regulations -->
+    <aside class="dash-col dash-right">
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <i class="fa fa-scale-balanced"></i> Rules and Regulation
+        </div>
+        <div class="rules-body">
+          <div class="rules-scroll">
+            <p class="rules-uni">University of Cebu</p>
+            <p class="rules-college">COLLEGE OF INFORMATION &amp; COMPUTER STUDIES</p>
+            <p class="rules-title">LABORATORY RULES AND REGULATIONS</p>
+            <p class="rules-intro">To avoid embarrassment and maintain camaraderie with your friends and superiors at
+              our laboratories, please observe the following:</p>
+            <p class="rules-item">1. Maintain silence, proper decorum, and discipline inside the laboratory. Mobile
+              phones, walkmans and other personal pieces of equipment must be switched off.</p>
+            <p class="rules-item">2. Games are not allowed inside the lab. This includes computer-related games, card
+              games and other games that may disturb the operation of the lab.</p>
+            <p class="rules-item">3. Surfing the Internet is allowed only with the permission of the instructor.
+              Downloading and installing of software are strictly prohibited.</p>
+            <p class="rules-item">4. Getting access to other websites not related to the course (especially pornographic
+              and illicit sites) is strictly prohibited.</p>
+            <p class="rules-item">5. Deleting computer files and changing the set-up of the computer is a major offense.
+            </p>
+            <p class="rules-item">6. Observe computer time usage carefully. A fifteen-minute allowance is given for each
+              use. Otherwise, the unit will be given to those who wish to "sit-in".</p>
+            <p class="rules-item">7. Observe proper decorum while inside the laboratory.</p>
+            <ul class="rules-sublist">
+              <li>Do not get inside the lab unless the instructor is present.</li>
+              <li>All bags, knapsacks, and the likes must be deposited at the counter.</li>
+              <li>Follow the seating arrangement of your instructor.</li>
+              <li>At the end of class, all software programs must be closed.</li>
+              <li>Return all chairs to their proper places after using.</li>
+            </ul>
+            <p class="rules-item">8. Chewing gum, eating, drinking, smoking, and other forms of vandalism are prohibited
+              inside the lab.</p>
+            <p class="rules-item">9. Anyone causing a continual disturbance will be asked to leave the lab. Acts or
+              gestures offensive to the members of the community, including public display of physical intimacy, are not
+              tolerated.</p>
+            <p class="rules-item">10. Persons exhibiting hostile or threatening behavior such as yelling, swearing, or
+              disregarding requests made by lab personnel will be asked to leave the lab.</p>
+            <p class="rules-item">11. For serious offense, the lab personnel may call the Civil Security Office (CSU)
+              for assistance.</p>
+            <p class="rules-item">12. Any technical problem or difficulty must be addressed to the laboratory
+              supervisor, student assistant or instructor immediately.</p>
+            <p class="rules-title" style="margin-top:1rem;">DISCIPLINARY ACTION</p>
+            <ul class="rules-sublist">
+              <li><strong>First Offense</strong> : The Head or the Dean or OIC recommends to the Guidance Center for a
+                suspension from classes for each offender.</li>
+              <li><strong>Second and Subsequent Offenses</strong> : A recommendation for a heavier sanction will be
+                endorsed to the Guidance Center.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- SUCCESS LOGIN MODAL -->
+  <div id="login-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box login-success-modal" role="dialog" aria-modal="true" aria-labelledby="login-success-title" aria-describedby="modal-welcome">
+      <div class="login-success-mark"><i class="fa fa-check"></i></div>
+      <span class="login-success-kicker">Signed in successfully</span>
+      <h2 class="modal-title" id="login-success-title">Welcome back</h2>
+      <p class="modal-msg" id="modal-welcome"></p>
+      <button class="modal-ok-btn" onclick="closeModal()">Continue</button>
+    </div>
+  </div>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('ccs_current_user') || 'null');
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      const updateUI = (u) => {
+        const fullName = [u.firstname, u.middlename, u.lastname].filter(Boolean).join(' ');
+        document.getElementById('dash-name').textContent = fullName || '-';
+        document.getElementById('dash-course-badge').textContent = u.course || '-';
+        document.getElementById('dash-course').textContent = u.course || '-';
+        document.getElementById('dash-year').textContent = u.level || '-';
+        document.getElementById('dash-email').textContent = u.email || '-';
+        document.getElementById('dash-address').textContent = u.address || '-';
+        document.getElementById('dash-session').textContent = u.sitin_remaining ?? 30;
+        document.getElementById('home-greeting').textContent = `Welcome back, ${u.firstname || 'Student'}`;
+        document.getElementById('home-session').textContent = u.sitin_remaining ?? 30;
+        const remaining = Number(u.sitin_remaining ?? 30);
+        const glanceCount = document.getElementById('glance-session-count');
+        const glanceNote = document.getElementById('glance-session-note');
+        if (glanceCount) glanceCount.textContent = remaining;
+        if (glanceNote) glanceNote.textContent = remaining <= 5
+          ? 'Running low. Use your sessions carefully.'
+          : 'Ready for your next sit-in.';
+        document.getElementById('home-course').textContent = u.course || '-';
+        document.getElementById('home-course').title = u.course || '';
+        document.getElementById('home-id').textContent = u.idNum || 'Student ID';
+        document.getElementById('home-level').textContent = u.level || 'Year Level';
+        document.getElementById('home-year').textContent = u.level || '-';
+        const homeDate = document.getElementById('home-date');
+        if (homeDate) {
+          homeDate.textContent = new Date().toLocaleDateString(undefined, {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+          });
+        }
+      };
+
+      updateUI(user);
+      loadStudentActivity(user.idNum);
+
+      // Fetch fresh profile data instantly silently
+      fetch('api/student.php?action=get_profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idNum: user.idNum })
+      }).then(r => r.json()).then(data => {
+        if (data.success && data.user) {
+          const freshUser = { ...user, ...data.user };
+          localStorage.setItem('ccs_current_user', JSON.stringify(freshUser));
+          updateUI(freshUser);
+          loadStudentActivity(freshUser.idNum);
+        }
+      }).catch(e => console.error('Failed to refresh student profile', e));
+
+      // Load saved profile picture
+      if (user.profilePic) {
+        document.getElementById('dash-avatar').src = user.profilePic;
+      }
+
+      if (sessionStorage.getItem('just_logged_in') === 'true') {
+        const fullName = [user.firstname, user.middlename, user.lastname].filter(Boolean).join(' ');
+        document.getElementById('modal-welcome').textContent = `${fullName || 'Student'}, you are signed in.`;
+        document.getElementById('login-modal').style.display = 'flex';
+        sessionStorage.removeItem('just_logged_in');
+      }
+
+      // Fetch dynamic announcements
+      let allAnnouncements = [];
+      let prevAnnouncementsStr = '';
+
+      window.addEventListener('announcements-loaded', (e) => {
+        const newStr = JSON.stringify(e.detail.announcements);
+        if (newStr !== prevAnnouncementsStr) {
+          allAnnouncements = e.detail.announcements;
+          prevAnnouncementsStr = newStr;
+          const countEl = document.getElementById('announce-count');
+          if (countEl) countEl.textContent = allAnnouncements.length + ' post' + (allAnnouncements.length !== 1 ? 's' : '');
+          renderAnnouncements(allAnnouncements);
+        }
+      });
+
+      function renderAnnouncements(list) {
+        const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[ch]));
+        const container = document.getElementById('student-announcements');
+        if (!list.length) {
+          container.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:#b8a9d9;padding:20px;">
+              <i class="fa fa-bell-slash" style="font-size:2rem;"></i>
+              <p style="font-size:14px;font-style:italic;text-align:center;margin:0;">No announcements found.</p>
+            </div>`;
+          return;
+        }
+        container.innerHTML = list.map((a, i) => `
+          <div class="announce-card" style="animation-delay: ${i * 0.04}s;">
+            <div class="announce-card-head">
+              <div class="announce-author">
+                <div class="announce-avatar">
+                  <i class="fa fa-circle-user"></i>
+                </div>
+                <span>CCS Admin</span>
+              </div>
+              <span class="announce-date">
+                <i class="fa fa-clock"></i>${escapeHTML(a.date || '')}
+              </span>
+            </div>
+            <p>${a.text ? escapeHTML(a.text) : '<em>No content</em>'}</p>
+          </div>
+        `).join('');
+      }
+
+      function filterAnnouncements(query) {
+        const q = query.toLowerCase().trim();
+        const filtered = q ? allAnnouncements.filter(a =>
+          (a.text || '').toLowerCase().includes(q) || (a.date || '').toLowerCase().includes(q)
+        ) : allAnnouncements;
+        renderAnnouncements(filtered);
+      }
+
+      // Polling is handled by notifications.js
+    });
+
+    async function loadStudentActivity(idNum) {
+      if (!idNum) return;
+      try {
+        const [reservationsRes, historyRes] = await Promise.all([
+          fetch('api/student.php?action=get_my_reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idNum })
+          }),
+          fetch('api/student.php?action=get_history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idNum })
+          })
+        ]);
+        const reservationsData = await reservationsRes.json();
+        const historyData = await historyRes.json();
+        renderReservationReminders(reservationsData.success ? reservationsData.reservations : []);
+        renderRecentActivity(historyData.success ? historyData.history : []);
+      } catch (e) {
+        console.error('Failed to load student activity', e);
+      }
+    }
+
+    function escapeMini(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[ch]));
+    }
+
+    function renderReservationReminders(reservations) {
+      const wrap = document.getElementById('student-reservation-reminders');
+      if (!wrap) return;
+      const upcoming = (reservations || [])
+        .filter(r => String(r.status || '').toLowerCase() === 'reserved')
+        .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
+        .slice(0, 3);
+      const nextTitle = document.getElementById('glance-reservation-title');
+      const nextMeta = document.getElementById('glance-reservation-meta');
+      if (nextTitle && nextMeta) {
+        if (upcoming.length) {
+          const next = upcoming[0];
+          nextTitle.textContent = `Lab ${next.lab || '-'}${next.pc_number ? ' PC ' + next.pc_number : ''}`;
+          nextMeta.textContent = `${next.date || ''} ${next.time_slot || ''}`.trim();
+        } else {
+          nextTitle.textContent = 'None scheduled';
+          nextMeta.textContent = 'Reserve a lab when you are ready.';
+        }
+      }
+      wrap.innerHTML = upcoming.length ? upcoming.map(r => `
+        <div class="student-activity-item">
+          <span class="student-status-badge reserved">Reserved</span>
+          <strong>Lab ${escapeMini(r.lab)} ${r.pc_number ? 'PC ' + escapeMini(r.pc_number) : ''}</strong>
+          <small>${escapeMini(r.date || '')} ${escapeMini(r.time_slot || '')}</small>
+        </div>
+      `).join('') : `<div class="student-activity-empty">No upcoming reservations.</div>`;
+    }
+
+    function renderRecentActivity(history) {
+      const wrap = document.getElementById('student-activity-timeline');
+      if (!wrap) return;
+      const recent = (history || []).slice(0, 4);
+      const active = (history || []).find(r => String(r.status || '').toLowerCase() === 'active');
+      const statusTitle = document.getElementById('glance-status-title');
+      const statusMeta = document.getElementById('glance-status-meta');
+      if (statusTitle && statusMeta) {
+        if (active) {
+          statusTitle.textContent = 'In Session';
+          statusMeta.textContent = `Lab ${active.lab || '-'} since ${active.login || ''}`.trim();
+        } else {
+          statusTitle.textContent = 'Ready';
+          statusMeta.textContent = 'No active sit-in right now.';
+        }
+      }
+      wrap.innerHTML = recent.length ? recent.map(r => `
+        <div class="student-activity-item">
+          <span class="student-status-badge ${escapeMini(String(r.status || '').toLowerCase())}">${escapeMini(r.status || 'Session')}</span>
+          <strong>${escapeMini(r.purpose || 'Sit-in session')}</strong>
+          <small>Lab ${escapeMini(r.lab || '-')} - ${escapeMini(r.date || '')}</small>
+          ${r.feedback_message ? `<em>Feedback: ${escapeMini(r.feedback_message)}</em>` : ''}
+        </div>
+      `).join('') : `<div class="student-activity-empty">No recent activity yet.</div>`;
+    }
+
+    function closeModal() {
+      document.getElementById('login-modal').style.display = 'none';
+    }
+    function handleLogout() {
+      localStorage.removeItem('ccs_current_user');
+      window.location.href = 'login.html';
+    }
+    function goHome() {
+      const user = JSON.parse(localStorage.getItem('ccs_current_user') || 'null');
+      window.location.href = user ? 'dashboard.html' : 'index.html';
+    }
+  </script>
+</body>
+
+</html>
+
+

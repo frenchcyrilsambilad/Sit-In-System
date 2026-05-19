@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CCS | Edit Profile</title>
+  <link rel="stylesheet" href="style.css?v=21"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="user-theme.css?v=10"/>
+</head>
+<body class="auth-body student-shell edit-profile-compact">
+
+  <!-- NAVBAR — matches dashboard navbar exactly -->
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html" class="active"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <!-- AUTH CARD — same layout as registration -->
+  <div class="auth-wrapper reg-wrapper">
+    <div class="auth-card reg-card">
+
+      <!-- LEFT: Form Panel -->
+      <div class="reg-form-panel">
+
+        <div class="auth-logo-center">
+          <!--
+            ============================================================
+            SMALL LOGO: University of Cebu logo — static/uclogo.png
+            ============================================================
+          -->
+          <img src="static/uclogo.png" alt="University of Cebu" class="uc-logo-img"/>
+          <p class="uc-tagline">Edit your profile information</p>
+        </div>
+
+        <div id="edit-error" class="auth-alert" style="display:none;"></div>
+        <div id="edit-success" class="auth-alert success" style="display:none;"></div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="edit-firstname">First Name :</label>
+            <input type="text" id="edit-firstname" placeholder=""/>
+          </div>
+          <div class="form-group">
+            <label for="edit-lastname">Last Name :</label>
+            <input type="text" id="edit-lastname" placeholder=""/>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="edit-email">Email :</label>
+            <input type="email" id="edit-email" placeholder="info@gmail.com"/>
+          </div>
+          <div class="form-group">
+            <label for="edit-middlename">Middle Name :</label>
+            <input type="text" id="edit-middlename" placeholder=""/>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="edit-pass">New Password :</label>
+            <div class="input-wrap">
+              <input type="password" id="edit-pass" placeholder="Leave blank to keep current"/>
+              <span class="input-icon toggle-pass" onclick="togglePass('edit-pass', this)">
+                <i class="fa fa-eye-slash"></i>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edit-pass2">Confirm Password :</label>
+            <div class="input-wrap">
+              <input type="password" id="edit-pass2" placeholder="Leave blank to keep current"/>
+              <span class="input-icon toggle-pass" onclick="togglePass('edit-pass2', this)">
+                <i class="fa fa-eye-slash"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="edit-id">ID Number :</label>
+            <!-- ID Number is read-only — cannot be changed -->
+            <input type="text" id="edit-id" placeholder="" readonly style="background:#f0eeee; cursor:not-allowed;"/>
+          </div>
+          <div class="form-group">
+            <label for="edit-level">Year Level :</label>
+            <select id="edit-level">
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
+              <option value="4">4th Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-course">Course :</label>
+          <select id="edit-course">
+            <option value="Information Technology">Information Technology</option>
+            <option value="Computer Engineering">Computer Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Mechanical Engineering">Mechanical Engineering</option>
+            <option value="Electrical Engineering">Electrical Engineering</option>
+            <option value="Industrial Engineering">Industrial Engineering</option>
+            <option value="Naval Architecture and Marine Engineering">Naval Architecture and Marine Engineering</option>
+            <option value="Elementary Education (BEEd)">Elementary Education (BEEd)</option>
+            <option value="Secondary Education (BSEd)">Secondary Education (BSEd)</option>
+            <option value="Criminology">Criminology</option>
+            <option value="Commerce">Commerce</option>
+            <option value="Accountancy">Accountancy</option>
+            <option value="Hotel and Restaurant Management">Hotel and Restaurant Management</option>
+            <option value="Customs Administration">Customs Administration</option>
+            <option value="Computer Secretarial">Computer Secretarial</option>
+            <option value="Industrial Psychology">Industrial Psychology</option>
+            <option value="AB Political Science">AB Political Science</option>
+            <option value="AB English">AB English</option>
+            <option value="CISCO Networking Academy (Module 1 - 4)">CISCO Networking Academy (Module 1 - 4)</option>
+            <option value="English Communication Skills">English Communication Skills</option>
+            <option value="Conversational Korean">Conversational Korean</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-address">Address :</label>
+          <input type="text" id="edit-address" placeholder=""/>
+        </div>
+
+        <div class="reg-btn-row">
+          <button class="btn-auth btn-signup" id="save-profile-btn" onclick="handleSaveProfile()">
+            <i class="fa fa-floppy-disk"></i> Save Changes
+          </button>
+        </div>
+
+        <p class="auth-switch">
+          <a href="dashboard.html"><i class="fa fa-arrow-left"></i> Back to Dashboard</a>
+        </p>
+      </div>
+
+      <!-- RIGHT: Profile Picture Upload Panel -->
+      <div class="reg-illustration">
+        <div class="signup-bubble"><i class="fa fa-camera"></i> Edit Picture</div>
+
+        <div class="pfp-upload-wrap">
+          <div class="pfp-preview-ring">
+            <img id="pfp-preview" src="static/temppfp.jpg" alt="Profile Preview" class="pfp-preview-img"/>
+            <label for="pfp-input" class="pfp-edit-overlay">
+              <i class="fa fa-camera"></i>
+            </label>
+          </div>
+          <input type="file" id="pfp-input" accept="image/*" style="display:none;"/>
+          <p class="pfp-hint">Click photo to change</p>
+        </div>
+
+        <p class="illus-tagline">Keep your info up to date!</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SAVE SUCCESS TOAST -->
+  <div id="save-toast" class="profile-save-toast" role="status" aria-live="polite">
+    <span><i class="fa fa-check"></i></span>
+    <div>
+      <strong>Profile updated</strong>
+      <p>Your changes were saved successfully.</p>
+    </div>
+  </div>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('ccs_current_user') || 'null');
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      // Pre-fill fields
+      document.getElementById('edit-firstname').value  = user.firstname  || '';
+      document.getElementById('edit-lastname').value   = user.lastname   || '';
+      document.getElementById('edit-middlename').value = user.middlename || '';
+      document.getElementById('edit-email').value      = user.email      || '';
+      document.getElementById('edit-id').value         = user.idNum      || '';
+      document.getElementById('edit-address').value    = user.address    || '';
+      document.getElementById('edit-level').value      = String(user.level || '1');
+      document.getElementById('edit-course').value     = user.course || 'Information Technology';
+
+      // Load existing profile picture if saved
+      if (user.profilePic) {
+        document.getElementById('pfp-preview').src = user.profilePic;
+      }
+
+      // Profile picture file input — preview on select
+      document.getElementById('pfp-input').addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+          alert('Please select a valid image file.');
+          return;
+        }
+        if (file.size > 2 * 1024 * 1024) {
+          alert('Image is too large. Please choose a file under 2MB.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('pfp-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    async function handleSaveProfile() {
+      const errorEl = document.getElementById('edit-error');
+      if (errorEl) errorEl.style.display = 'none';
+      const saveBtn = document.getElementById('save-profile-btn');
+      const originalBtnHTML = saveBtn ? saveBtn.innerHTML : '';
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.classList.add('is-saving');
+        saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+      }
+
+      const user = JSON.parse(localStorage.getItem('ccs_current_user') || 'null');
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      const firstname  = document.getElementById('edit-firstname')?.value.trim();
+      const lastname   = document.getElementById('edit-lastname')?.value.trim();
+      const middlename = document.getElementById('edit-middlename')?.value.trim() || '';
+      const email      = document.getElementById('edit-email')?.value.trim();
+      const address    = document.getElementById('edit-address')?.value.trim();
+      const level      = document.getElementById('edit-level')?.value;
+      const course     = document.getElementById('edit-course')?.value;
+      const newPass    = document.getElementById('edit-pass')?.value || '';
+      const newPass2   = document.getElementById('edit-pass2')?.value || '';
+
+      if (!firstname || !lastname || !email || !address) {
+        if (errorEl) { errorEl.textContent = 'Please fill in all required fields.'; errorEl.style.display = 'block'; }
+        resetSaveButton();
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        if (errorEl) { errorEl.textContent = 'Please enter a valid email address.'; errorEl.style.display = 'block'; }
+        resetSaveButton();
+        return;
+      }
+      if (newPass && newPass.length < 6) {
+        if (errorEl) { errorEl.textContent = 'New password must be at least 6 characters.'; errorEl.style.display = 'block'; }
+        resetSaveButton();
+        return;
+      }
+      if (newPass && newPass !== newPass2) {
+        if (errorEl) { errorEl.textContent = 'Passwords do not match.'; errorEl.style.display = 'block'; }
+        resetSaveButton();
+        return;
+      }
+
+      const payload = {
+        idNum: user.idNum,
+        firstname, lastname, middlename, email, address, level, course,
+        password: newPass
+      };
+
+      const pfpSrc = document.getElementById('pfp-preview').src;
+      if (pfpSrc && pfpSrc.startsWith('data:image')) {
+          payload.profilePic = pfpSrc;
+      }
+
+      try {
+        const res = await fetch('api/student.php?action=update_profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+            localStorage.setItem('ccs_current_user', JSON.stringify(data.user));
+            showSaveToast();
+        } else {
+            if (errorEl) { errorEl.textContent = data.message || 'Failed to update profile.'; errorEl.style.display = 'block'; }
+            resetSaveButton();
+        }
+      } catch (err) {
+         if (errorEl) { errorEl.textContent = 'Server connection failed.'; errorEl.style.display = 'block'; }
+         resetSaveButton();
+      }
+
+      function resetSaveButton() {
+        if (!saveBtn) return;
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('is-saving');
+        saveBtn.innerHTML = originalBtnHTML;
+      }
+    }
+
+    function showSaveToast() {
+      const toast = document.getElementById('save-toast');
+      if (toast) toast.classList.add('show');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('ccs_current_user');
+    }
+  </script>
+</body>
+</html>

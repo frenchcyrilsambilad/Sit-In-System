@@ -1,0 +1,215 @@
+<div class="analytics-shell">
+  <div class="analytics-filter-bar">
+    <label>
+      <span>From</span>
+      <input type="date" id="analytics-from" />
+    </label>
+    <label>
+      <span>To</span>
+      <input type="date" id="analytics-to" />
+    </label>
+    <label>
+      <span>Lab Room</span>
+      <select id="analytics-lab">
+        <option value="">All Labs</option>
+      </select>
+    </label>
+    <button class="analytics-apply-btn" onclick="applyAnalyticsFilters()">
+      <i class="fa fa-magnifying-glass"></i>
+      Apply Filter
+    </button>
+    <button class="analytics-reset-btn" onclick="resetAnalyticsFilters()">
+      <i class="fa fa-rotate-left"></i>
+      Reset
+    </button>
+    <button class="analytics-report-btn" onclick="generateMonthlyAnalyticsReport()">
+      <i class="fa fa-file-pdf"></i>
+      Monthly PDF
+    </button>
+  </div>
+
+  <div class="analytics-stats-grid">
+    <div class="analytics-stat-card accent-blue">
+      <span class="analytics-stat-icon"><i class="fa fa-desktop"></i></span>
+      <div>
+        <strong id="analytics-stat-total">0</strong>
+        <span>Total Sit-In Sessions</span>
+        <small>All matching records</small>
+      </div>
+    </div>
+    <div class="analytics-stat-card accent-green">
+      <span class="analytics-stat-icon"><i class="fa fa-user"></i></span>
+      <div>
+        <strong id="analytics-stat-students">0</strong>
+        <span>Unique Students</span>
+        <small>Distinct sit-in users</small>
+      </div>
+    </div>
+    <div class="analytics-stat-card accent-gold">
+      <span class="analytics-stat-icon"><i class="fa fa-clock"></i></span>
+      <div>
+        <strong id="analytics-stat-average">0</strong>
+        <span>Avg. Session (min)</span>
+        <small>Login to logout</small>
+      </div>
+    </div>
+    <div class="analytics-stat-card accent-purple">
+      <span class="analytics-stat-icon"><i class="fa fa-calendar-check"></i></span>
+      <div>
+        <strong id="analytics-stat-reservations">0</strong>
+        <span>Total Reservations</span>
+        <small id="analytics-stat-approved">0 approved</small>
+      </div>
+    </div>
+    <div class="analytics-stat-card accent-pink">
+      <span class="analytics-stat-icon"><i class="fa fa-comment"></i></span>
+      <div>
+        <strong id="analytics-stat-feedback">0</strong>
+        <span>Feedback Received</span>
+        <small>Student submissions</small>
+      </div>
+    </div>
+  </div>
+
+  <div id="analytics-admin-alerts" class="analytics-alerts"></div>
+
+  <div class="analytics-insight-grid">
+    <div class="analytics-insight-card">
+      <span><i class="fa fa-door-open"></i></span>
+      <small>Most Used Lab</small>
+      <strong id="analytics-insight-lab">-</strong>
+    </div>
+    <div class="analytics-insight-card">
+      <span><i class="fa fa-code"></i></span>
+      <small>Most Used Purpose</small>
+      <strong id="analytics-insight-purpose">-</strong>
+    </div>
+    <div class="analytics-insight-card">
+      <span><i class="fa fa-business-time"></i></span>
+      <small>Peak Hour</small>
+      <strong id="analytics-insight-hour">-</strong>
+    </div>
+  </div>
+
+  <div class="analytics-section-label"><span>Sit-In Trends</span></div>
+  <div class="analytics-grid two">
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-wave-square"></i> Daily Sessions</h3>
+          <p>Completed sit-ins by date</p>
+        </div>
+      </div>
+      <div class="analytics-chart large"><canvas id="analyticsDailyChart"></canvas></div>
+    </section>
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-chart-pie"></i> Sessions by Purpose</h3>
+          <p>Distribution of sit-in purposes</p>
+        </div>
+      </div>
+      <div class="analytics-chart large"><canvas id="analyticsPurposeChart"></canvas></div>
+    </section>
+  </div>
+
+  <div class="analytics-section-label"><span>Lab & Course Breakdown</span></div>
+  <div class="analytics-grid three">
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-chart-simple"></i> Sessions by Lab Room</h3>
+          <p>Horizontal bar chart</p>
+        </div>
+      </div>
+      <div class="analytics-chart"><canvas id="analyticsLabRoomChart"></canvas></div>
+    </section>
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-circle-notch"></i> Sessions by Course</h3>
+          <p>Student course distribution</p>
+        </div>
+      </div>
+      <div class="analytics-chart"><canvas id="analyticsCourseBreakdownChart"></canvas></div>
+    </section>
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-clock"></i> Peak Hours</h3>
+          <p>Sessions by login hour</p>
+        </div>
+      </div>
+      <div class="analytics-chart"><canvas id="analyticsPeakHoursChart"></canvas></div>
+    </section>
+  </div>
+
+  <div class="analytics-section-label"><span>Activity Heatmap</span></div>
+  <section class="analytics-card analytics-heatmap-card">
+    <div class="analytics-card-head">
+      <div>
+        <h3><i class="fa fa-grip"></i> Day x Hour Heatmap</h3>
+        <p>Which hours of which days are busiest</p>
+      </div>
+      <div class="analytics-heat-legend">
+        <span>Low</span><i></i><i></i><i></i><i></i><i></i><i></i><span>High</span>
+      </div>
+    </div>
+    <div id="analytics-heatmap" class="analytics-heatmap"></div>
+  </section>
+
+  <div class="analytics-section-label"><span>PC Availability by Lab</span></div>
+  <section class="analytics-card analytics-pc-card">
+    <div class="analytics-card-head">
+      <div>
+        <h3><i class="fa fa-desktop"></i> PC Availability Heatmap</h3>
+        <p>Reserved and active PCs by lab</p>
+      </div>
+    </div>
+    <div id="analytics-pc-heatmap" class="analytics-pc-heatmap"></div>
+  </section>
+
+  <div class="analytics-section-label"><span>Weekly & Reservation Insights</span></div>
+  <div class="analytics-grid two">
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-calendar-week"></i> Sessions by Day of Week</h3>
+          <p>Which days have the most sit-ins</p>
+        </div>
+      </div>
+      <div class="analytics-chart"><canvas id="analyticsWeekdayChart"></canvas></div>
+    </section>
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-calendar-days"></i> Reservation Status Breakdown</h3>
+          <p>Reserved, approved, active, and used</p>
+        </div>
+      </div>
+      <div class="analytics-chart"><canvas id="analyticsReservationChart"></canvas></div>
+    </section>
+  </div>
+
+  <div class="analytics-section-label"><span>Top Students & Monthly Leaderboard</span></div>
+  <div class="analytics-grid two bottom">
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-star"></i> Top Students by Sessions</h3>
+          <p>Most frequent sit-in users</p>
+        </div>
+      </div>
+      <div id="analytics-top-students" class="analytics-top-students"></div>
+    </section>
+    <section class="analytics-card">
+      <div class="analytics-card-head">
+        <div>
+          <h3><i class="fa fa-trophy"></i> Monthly Leaderboard</h3>
+          <p>Top students this month</p>
+        </div>
+      </div>
+      <div id="analytics-monthly-leaderboard" class="analytics-top-students"></div>
+    </section>
+  </div>
+</div>

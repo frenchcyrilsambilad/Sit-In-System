@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | Lab Status</title>
+  <meta name="description" content="Real-time laboratory PC availability status for CCS computer labs." />
+  <link rel="stylesheet" href="style.css?v=20" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="user-theme.css?v=3" />
+  <link rel="stylesheet" href="labstatus.css?v=1" />
+</head>
+<body class="student-shell lab-status-refresh">
+
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html" class="active"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <main class="lab-page">
+    <section class="lab-hero" aria-label="Lab status overview">
+      <div>
+        <span class="lab-kicker"><i class="fa fa-display"></i> Live Lab Monitor</span>
+        <h1 class="lab-title">Lab Status</h1>
+        <p class="lab-subtitle">Check real-time PC availability, active sit-ins, reservations, and published software by laboratory.</p>
+      </div>
+      <div class="lab-hero-actions">
+        <span class="last-updated" id="last-updated">Not updated yet</span>
+        <button class="btn-refresh" id="btn-refresh" onclick="refreshLabStatus()">
+          <i class="fa fa-rotate-right"></i> Refresh
+        </button>
+      </div>
+    </section>
+
+    <section class="lab-overview" aria-label="Campus lab overview">
+      <div class="overview-card available">
+        <i class="fa fa-circle-check"></i>
+        <div><span>Available PCs</span><strong id="total-available">0</strong></div>
+      </div>
+      <div class="overview-card active">
+        <i class="fa fa-user-clock"></i>
+        <div><span>Active Sit-ins</span><strong id="total-active">0</strong></div>
+      </div>
+      <div class="overview-card reserved">
+        <i class="fa fa-calendar-check"></i>
+        <div><span>Reserved PCs</span><strong id="total-reserved">0</strong></div>
+      </div>
+      <div class="overview-card labs">
+        <i class="fa fa-building"></i>
+        <div><span>Labs Online</span><strong id="total-labs">0</strong></div>
+      </div>
+    </section>
+
+    <section class="lab-console" aria-label="Selected lab status">
+      <aside class="lab-rail">
+        <div class="panel-header">
+          <span><i class="fa fa-flask"></i> Laboratories</span>
+        </div>
+        <div class="lab-list" id="lab-tabs">
+          <button class="lab-list-loading"><i class="fa fa-spinner fa-spin"></i> Loading labs...</button>
+        </div>
+      </aside>
+
+      <section class="lab-workspace">
+        <div class="workspace-header">
+          <div>
+            <span class="workspace-eyebrow">Selected Laboratory</span>
+            <h2 id="grid-lab-name">Lab</h2>
+          </div>
+          <div class="workspace-metrics">
+            <span><b id="ov-available">0</b> Available</span>
+            <span><b id="ov-active">0</b> Active</span>
+            <span><b id="ov-reserved">0</b> Reserved</span>
+          </div>
+        </div>
+
+        <div class="lab-capacity">
+          <div class="capacity-copy">
+            <strong id="capacity-label">0% available</strong>
+            <span id="capacity-detail">No lab selected</span>
+          </div>
+          <div class="capacity-track"><div id="capacity-fill"></div></div>
+        </div>
+
+        <div class="map-toolbar">
+          <div class="legend">
+            <span><i class="dot available"></i> Available</span>
+            <span><i class="dot active"></i> Active</span>
+            <span><i class="dot reserved"></i> Reserved</span>
+          </div>
+          <span class="map-hint">Hover a PC for details</span>
+        </div>
+
+        <div class="pc-grid" id="pc-grid">
+          <div class="map-empty"><i class="fa fa-spinner fa-spin"></i> Loading PC map...</div>
+        </div>
+      </section>
+    </section>
+
+    <section class="software-panel" aria-label="Available software">
+      <div class="panel-header">
+        <span><i class="fa fa-layer-group"></i> Available Software</span>
+        <small id="software-count">Loading</small>
+      </div>
+
+      <div class="software-toolbar">
+        <div class="software-search">
+          <i class="fa fa-magnifying-glass"></i>
+          <input type="text" id="software-search" placeholder="Search software, version, category, or lab..." />
+        </div>
+        <div class="software-lab-pills" id="software-lab-pills"></div>
+      </div>
+
+      <div class="software-category-pills" id="software-category-pills"></div>
+      <div class="software-grid" id="software-grid">
+        <div class="software-empty"><i class="fa fa-spinner fa-spin"></i><strong>Loading software catalog</strong></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script src="labstatus.js?v=1"></script>
+</body>
+</html>

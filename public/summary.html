@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCS | My Summary</title>
+  <meta name="description" content="View your sit-in session summary, statistics, and history at the College of Computer Studies." />
+  <link rel="stylesheet" href="style.css?v=20" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Raleway:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="user-theme.css?v=3" />
+  <link rel="stylesheet" href="summary.css?v=1" />
+</head>
+<body class="student-shell summary-refresh">
+
+  <nav class="navbar dash-navbar">
+    <div class="nav-brand">CCS Sit-in Portal</div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+      <i class="fa fa-bars"></i>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li class="dropdown">
+        <a href="#" id="bell-link" style="display:flex;align-items:center;gap:6px;">
+          <div style="position:relative;">
+            <i class="fa fa-bell"></i>
+            <span id="bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#e74c3c;color:#fff;font-size:10px;font-weight:bold;padding:2px 5px;border-radius:10px;line-height:1;">0</span>
+          </div>
+          <span class="nav-label">Notification</span> <i class="fa fa-caret-down" style="margin-left:4px;"></i>
+        </a>
+        <div class="dropdown-menu" id="notification-menu">
+          <a href="#">No new notifications</a>
+        </div>
+      </li>
+      <li><a href="dashboard.html"><i class="fa fa-house"></i> <span class="nav-label">Home</span></a></li>
+      <li><a href="editprofile.html"><i class="fa fa-pen-to-square"></i> <span class="nav-label">Edit Profile</span></a></li>
+      <li><a href="history.html"><i class="fa fa-clock-rotate-left"></i> <span class="nav-label">History</span></a></li>
+      <li><a href="reservation.html"><i class="fa fa-calendar-check"></i> <span class="nav-label">Reservation</span></a></li>
+      <li><a href="leaderboard.html"><i class="fa fa-trophy"></i> <span class="nav-label">Leaderboard</span></a></li>
+      <li><a href="summary.html" class="active"><i class="fa fa-chart-simple"></i> <span class="nav-label">My Summary</span></a></li>
+      <li><a href="labstatus.html"><i class="fa fa-desktop"></i> <span class="nav-label">Lab Status</span></a></li>
+      <li><a href="login.html" class="btn-logout-nav" onclick="localStorage.removeItem('ccs_current_user')"><i class="fa fa-right-from-bracket"></i> <span class="nav-label">Log out</span></a></li>
+    </ul>
+  </nav>
+
+  <main class="summary-page">
+    <section class="summary-hero" aria-label="Summary overview">
+      <div>
+        <span class="summary-kicker"><i class="fa fa-chart-simple"></i> My Summary</span>
+        <h1 class="summary-title">Sit-in Activity</h1>
+        <p class="summary-subtitle">Review your completed sessions, total lab time, and reservation history in one place.</p>
+      </div>
+      <button class="btn-export-csv" onclick="exportCSV()" id="btn-export">
+        <i class="fa fa-file-csv"></i> Export CSV
+      </button>
+    </section>
+
+    <section class="stat-cards" aria-label="Summary totals">
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa fa-clock"></i></span>
+        <div>
+          <div class="stat-value" id="stat-hours">0.0h</div>
+          <div class="stat-label">Total Hours</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa fa-layer-group"></i></span>
+        <div>
+          <div class="stat-value" id="stat-sessions">0</div>
+          <div class="stat-label">Completed Sessions</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa fa-chart-line"></i></span>
+        <div>
+          <div class="stat-value" id="stat-avg">0m</div>
+          <div class="stat-label">Average Duration</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><i class="fa fa-stopwatch"></i></span>
+        <div>
+          <div class="stat-value" id="stat-longest">0m</div>
+          <div class="stat-label">Longest Session</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary-card" aria-label="Session history">
+      <div class="summary-card-header">
+        <span><i class="fa fa-table-list"></i> Session History</span>
+        <small id="summary-count">Loading</small>
+      </div>
+
+      <div class="summary-toolbar">
+        <label class="entries-wrap">
+          Show
+          <select id="entries-select">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          entries
+        </label>
+        <div class="search-wrap">
+          <i class="fa fa-search"></i>
+          <input type="text" id="summary-search" placeholder="Search sessions..." />
+        </div>
+      </div>
+
+      <div class="summary-table-wrap">
+        <table class="summary-table" id="summary-table">
+          <thead>
+            <tr>
+              <th data-col="date">Date <i class="fa fa-sort"></i></th>
+              <th data-col="login">Time In <i class="fa fa-sort"></i></th>
+              <th data-col="logout">Time Out <i class="fa fa-sort"></i></th>
+              <th data-col="duration">Duration <i class="fa fa-sort"></i></th>
+              <th data-col="lab">Lab <i class="fa fa-sort"></i></th>
+              <th data-col="pc_number">PC / Reservation <i class="fa fa-sort"></i></th>
+              <th data-col="purpose">Purpose <i class="fa fa-sort"></i></th>
+              <th data-col="status">Status <i class="fa fa-sort"></i></th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody">
+            <tr><td colspan="8" class="table-empty"><i class="fa fa-spinner fa-spin"></i> Loading sessions...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-footer">
+        <div class="table-info" id="table-info">No entries</div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="notifications.js?v=7"></script>
+  <script src="script.js?v=26"></script>
+  <script src="summary.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,742 @@
+/* Shared light/dark theme layer */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --bg-color: #f3effd;
+  --card-bg: #ffffff;
+  --card-bg-soft: #fbf9ff;
+  --text-color: #2e0f66;
+  --muted-text: #6f5c8f;
+  --border-color: #ded2f4;
+  --primary-color: #341070;
+  --primary-color-2: #5b21b6;
+  --accent-color: #f5a623;
+  --input-bg: #ffffff;
+  --input-text: #2e0f66;
+  --table-header-bg: #f8f6ff;
+  --table-row-bg: #ffffff;
+  --table-row-hover: #f3effd;
+  --shadow: 0 10px 28px rgba(52, 16, 112, .08);
+  --shadow-strong: 0 18px 44px rgba(35, 9, 78, .18);
+  --scroll-track: #f3effd;
+  --scroll-thumb: #bfaee8;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg-color: #0f1020;
+  --card-bg: #17162b;
+  --card-bg-soft: #201d38;
+  --text-color: #f5f0ff;
+  --muted-text: #b8accd;
+  --border-color: rgba(207, 190, 255, .18);
+  --primary-color: #8b5cf6;
+  --primary-color-2: #a78bfa;
+  --accent-color: #f5c451;
+  --input-bg: #211f39;
+  --input-text: #f5f0ff;
+  --table-header-bg: #211f39;
+  --table-row-bg: #17162b;
+  --table-row-hover: #24213d;
+  --shadow: 0 14px 34px rgba(0, 0, 0, .32);
+  --shadow-strong: 0 24px 60px rgba(0, 0, 0, .46);
+  --scroll-track: #111122;
+  --scroll-thumb: #6d5aa8;
+
+  --admin-bg: var(--bg-color);
+  --admin-surface: var(--card-bg);
+  --admin-surface-soft: var(--card-bg-soft);
+  --admin-border: var(--border-color);
+  --admin-border-strong: rgba(207, 190, 255, .28);
+  --admin-purple: #2a1558;
+  --admin-purple-2: #6d28d9;
+  --admin-purple-3: #8b5cf6;
+  --admin-gold: var(--accent-color);
+  --admin-text: var(--text-color);
+  --admin-muted: var(--muted-text);
+  --admin-shadow: var(--shadow);
+  --admin-shadow-strong: var(--shadow-strong);
+
+  --bg: var(--bg-color);
+  --bg2: var(--card-bg-soft);
+  --card: var(--card-bg);
+  --card2: var(--card-bg-soft);
+  --border: var(--border-color);
+  --border2: var(--border-color);
+  --text: var(--text-color);
+  --text2: var(--muted-text);
+  --text3: #9b8bb6;
+  --nav-bg: linear-gradient(135deg, #1a1138 0%, #2a1558 100%);
+  --nav-text: rgba(245, 240, 255, .86);
+  --nav-active: rgba(245, 196, 81, .16);
+  --nav-hover: rgba(255, 255, 255, .08);
+  --header-bg: linear-gradient(135deg, #2a1558, #3b1b78);
+  --header-text: #ffffff;
+  --input-border: var(--border-color);
+  --input-placeholder: #8f84a8;
+}
+
+[data-theme="light"] body {
+  color-scheme: light;
+}
+
+[data-theme="dark"] body,
+body.dark-mode {
+  color-scheme: dark;
+
+  --purple: #8b5cf6;
+  --purple-mid: #a78bfa;
+  --purple-dark: #2a1558;
+
+  --navy: #8b5cf6;
+  --navy2: #a78bfa;
+  --navy3: #c4b5fd;
+  --gold: var(--accent-color);
+  --gold2: #f9d66c;
+
+  --bg: var(--bg-color);
+  --bg2: var(--card-bg-soft);
+  --card: var(--card-bg);
+  --card2: var(--card-bg-soft);
+  --border: var(--border-color);
+  --border2: rgba(207, 190, 255, .26);
+  --text: var(--text-color);
+  --text2: var(--muted-text);
+  --text3: #9b8bb6;
+  --text4: #7f7198;
+
+  --green: #4ade80;
+  --green-bg: rgba(74, 222, 128, .14);
+  --green-border: rgba(74, 222, 128, .34);
+  --red: #fb7185;
+  --red-bg: rgba(251, 113, 133, .14);
+  --blue: #8b5cf6;
+  --blue-bg: rgba(139, 92, 246, .16);
+  --amber: var(--accent-color);
+  --amber-bg: rgba(245, 196, 81, .16);
+
+  --nav-bg: linear-gradient(135deg, #1a1138 0%, #2a1558 58%, #3a1d76 100%);
+  --nav-text: rgba(245, 240, 255, .86);
+  --nav-active: rgba(245, 196, 81, .16);
+  --nav-hover: rgba(255, 255, 255, .08);
+
+  --header-bg: linear-gradient(135deg, #2a1558, #3b1b78);
+  --header-text: #ffffff;
+
+  --input-bg: #211f39;
+  --input-border: var(--border-color);
+  --input-text: var(--text-color);
+  --input-placeholder: #8f84a8;
+
+  --shadow: 0 14px 34px rgba(0, 0, 0, .32);
+  --shadow-md: 0 18px 44px rgba(0, 0, 0, .38);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, .46);
+
+  --scroll-track: #111122;
+  --scroll-thumb: #6d5aa8;
+}
+
+[data-theme="dark"] body {
+  background: radial-gradient(circle at top left, rgba(91, 33, 182, .22), transparent 34%), var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+body.theme-ready,
+body.theme-ready * {
+  transition: background-color .18s ease, border-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.theme-toggle-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .1);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+  cursor: pointer;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, .18);
+  color: var(--accent-color);
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 3px solid rgba(245, 196, 81, .55);
+  outline-offset: 2px;
+}
+
+.theme-toggle-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.student-nav-actions .theme-toggle-btn {
+  margin-right: 2px;
+}
+
+.navbar .theme-toggle-btn,
+.dash-navbar .theme-toggle-btn {
+  flex: 0 0 auto;
+}
+
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .dash-navbar,
+[data-theme="dark"] .student-shell .dash-navbar,
+[data-theme="dark"] .student-home-page .dash-navbar {
+  background: linear-gradient(135deg, #1a1138 0%, #2a1558 58%, #3a1d76 100%) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .28) !important;
+}
+
+[data-theme="dark"] .admin-body,
+[data-theme="dark"] .dashboard-body,
+[data-theme="dark"] .auth-body,
+[data-theme="dark"] .student-shell,
+[data-theme="dark"] .student-home-page,
+[data-theme="dark"] .summary-page,
+[data-theme="dark"] .res-page,
+[data-theme="dark"] .history-refresh-page {
+  background: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .form-panel,
+[data-theme="dark"] .register-card,
+[data-theme="dark"] .login-card,
+[data-theme="dark"] .modal-box,
+[data-theme="dark"] .modal-prem-box,
+[data-theme="dark"] .notify-dialog,
+[data-theme="dark"] .overview-panel,
+[data-theme="dark"] .overview-stat-card,
+[data-theme="dark"] .history-card,
+[data-theme="dark"] .summary-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .lb-card,
+[data-theme="dark"] .res-card,
+[data-theme="dark"] .res-grid-card,
+[data-theme="dark"] .lab-card,
+[data-theme="dark"] .profile-card,
+[data-theme="dark"] .student-profile-dropdown,
+[data-theme="dark"] .dropdown-menu {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+[data-theme="dark"] .overview-compose,
+[data-theme="dark"] .overview-search,
+[data-theme="dark"] .students-toolbar,
+[data-theme="dark"] .records-toolbar,
+[data-theme="dark"] .sitin-toolbar,
+[data-theme="dark"] .student-activity-item,
+[data-theme="dark"] .student-session-chip,
+[data-theme="dark"] .student-profile-trigger,
+[data-theme="dark"] .student-icon-btn {
+  background: var(--card-bg-soft) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] .form-title,
+[data-theme="dark"] .history-title,
+[data-theme="dark"] .summary-title,
+[data-theme="dark"] .stat-value,
+[data-theme="dark"] .stu-name-text,
+[data-theme="dark"] .overview-stat-card strong {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] small,
+[data-theme="dark"] label,
+[data-theme="dark"] .form-label,
+[data-theme="dark"] .stat-label,
+[data-theme="dark"] .summary-subtitle,
+[data-theme="dark"] .student-activity-empty,
+[data-theme="dark"] .stu-id-text,
+[data-theme="dark"] .overview-stat-card span,
+[data-theme="dark"] .overview-panel-header small {
+  color: var(--muted-text) !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .sf-val,
+[data-theme="dark"] .mprem-fg input,
+[data-theme="dark"] .mprem-fg select,
+[data-theme="dark"] .admin-search-bar input,
+[data-theme="dark"] .students-search-wrap input,
+[data-theme="dark"] .records-search-wrap input,
+[data-theme="dark"] .sitin-search-wrap input {
+  background: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #8f84a8 !important;
+}
+
+[data-theme="dark"] table,
+[data-theme="dark"] .students-table,
+[data-theme="dark"] .records-table,
+[data-theme="dark"] .sitin-table,
+[data-theme="dark"] .summary-table {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] thead th,
+[data-theme="dark"] .students-table thead th,
+[data-theme="dark"] .records-table thead th,
+[data-theme="dark"] .sitin-table thead th,
+[data-theme="dark"] .summary-table thead th {
+  background: var(--table-header-bg) !important;
+  color: #efe7ff !important;
+  border-color: rgba(139, 92, 246, .45) !important;
+}
+
+[data-theme="dark"] tbody tr,
+[data-theme="dark"] .students-table tbody tr,
+[data-theme="dark"] .records-table tbody tr,
+[data-theme="dark"] .sitin-table tbody tr,
+[data-theme="dark"] .summary-table tbody tr {
+  background: var(--table-row-bg) !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] tbody tr:hover,
+[data-theme="dark"] .students-table tbody tr:hover,
+[data-theme="dark"] .records-table tbody tr:hover,
+[data-theme="dark"] .sitin-table tbody tr:hover,
+[data-theme="dark"] .summary-table tbody tr:hover {
+  background: var(--table-row-hover) !important;
+}
+
+[data-theme="dark"] td,
+[data-theme="dark"] .students-table tbody td,
+[data-theme="dark"] .records-table tbody td,
+[data-theme="dark"] .sitin-table tbody td,
+[data-theme="dark"] .summary-table tbody td {
+  color: var(--text-color) !important;
+}
+
+[data-theme="dark"] .btn-ccs,
+[data-theme="dark"] .overview-primary-btn,
+[data-theme="dark"] .overview-search-btn,
+[data-theme="dark"] .btn-mprem-save,
+[data-theme="dark"] .btn-export-csv {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 24px rgba(109, 40, 217, .28) !important;
+}
+
+[data-theme="dark"] .btn-st-edit,
+[data-theme="dark"] .btn-st-delete,
+[data-theme="dark"] .btn-rec-delete,
+[data-theme="dark"] .btn-timeout-prem,
+[data-theme="dark"] .btn-mprem-cancel {
+  background: var(--card-bg-soft) !important;
+  color: #efe7ff !important;
+  border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .year-badge,
+[data-theme="dark"] .lab-badge,
+[data-theme="dark"] .nav-badge,
+[data-theme="dark"] .overview-count-pill {
+  background: rgba(245, 196, 81, .16) !important;
+  color: var(--accent-color) !important;
+  border-color: rgba(245, 196, 81, .35) !important;
+}
+
+[data-theme="dark"] .modal-overlay,
+[data-theme="dark"] .notify-overlay.show {
+  background: rgba(4, 3, 12, .72) !important;
+  backdrop-filter: blur(5px);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--scroll-thumb);
+}
+
+/* Admin panel theme bridge */
+[data-theme="light"] body.dashboard-body:not(.student-shell) {
+  --admin-bg: #f5f3fb;
+  --admin-surface: #ffffff;
+  --admin-surface-2: #faf9ff;
+  --admin-surface-soft: #fbf9ff;
+  --admin-line: #e7e0f2;
+  --admin-line-2: #d8cdea;
+  --admin-border: #ded2f4;
+  --admin-border-strong: #cdbced;
+  --admin-ink: #20113f;
+  --admin-ink-2: #4f426b;
+  --admin-text: #24104f;
+  --admin-muted: #786b91;
+  --admin-primary: #2f145f;
+  --admin-primary-2: #43207d;
+  --admin-primary-soft: #f0ebff;
+  --admin-purple: #341070;
+  --admin-purple-2: #4c1d95;
+  --admin-purple-3: #6b3ab5;
+  --admin-accent: #5b5bd6;
+  --admin-gold: #f5a623;
+  --admin-success: #0f8f61;
+  --admin-success-bg: #e9f8f1;
+  --admin-warning: #b86b00;
+  --admin-warning-bg: #fff7ed;
+  --admin-danger: #c2413d;
+  --admin-danger-bg: #fff0ef;
+  --admin-info: #2563b8;
+  --admin-info-bg: #eef5ff;
+  --admin-shadow: 0 14px 36px rgba(32, 17, 63, .08);
+  --admin-shadow-lg: 0 24px 70px rgba(32, 17, 63, .2);
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) {
+  --admin-bg: #0f1020;
+  --admin-surface: #17162b;
+  --admin-surface-2: #201d38;
+  --admin-surface-soft: #201d38;
+  --admin-line: rgba(207, 190, 255, .16);
+  --admin-line-2: rgba(207, 190, 255, .24);
+  --admin-border: rgba(207, 190, 255, .18);
+  --admin-border-strong: rgba(207, 190, 255, .32);
+  --admin-ink: #f5f0ff;
+  --admin-ink-2: #d9cff0;
+  --admin-text: #f5f0ff;
+  --admin-muted: #b8accd;
+  --admin-primary: #8b5cf6;
+  --admin-primary-2: #a78bfa;
+  --admin-primary-soft: rgba(139, 92, 246, .15);
+  --admin-purple: #8b5cf6;
+  --admin-purple-2: #6d28d9;
+  --admin-purple-3: #a78bfa;
+  --admin-accent: #a78bfa;
+  --admin-gold: #f5c451;
+  --admin-success: #4ade80;
+  --admin-success-bg: rgba(74, 222, 128, .14);
+  --admin-warning: #f5c451;
+  --admin-warning-bg: rgba(245, 196, 81, .14);
+  --admin-danger: #fb7185;
+  --admin-danger-bg: rgba(251, 113, 133, .14);
+  --admin-info: #93c5fd;
+  --admin-info-bg: rgba(147, 197, 253, .14);
+  --admin-shadow: 0 18px 44px rgba(0, 0, 0, .38);
+  --admin-shadow-lg: 0 28px 78px rgba(0, 0, 0, .52);
+
+  --bg-color: var(--admin-bg);
+  --card-bg: var(--admin-surface);
+  --card-bg-soft: var(--admin-surface-2);
+  --text-color: var(--admin-text);
+  --muted-text: var(--admin-muted);
+  --border-color: var(--admin-line);
+  --primary-color: var(--admin-primary);
+  --input-bg: #211f39;
+  --input-text: var(--admin-text);
+  --table-header-bg: #211f39;
+  --table-row-bg: var(--admin-surface);
+  --table-row-hover: #24213d;
+  --shadow: var(--admin-shadow);
+  --shadow-strong: var(--admin-shadow-lg);
+}
+
+.dash-navbar .nav-brand {
+  grid-template-columns: 42px minmax(0, 1fr) 38px 34px !important;
+}
+
+.admin-theme-toggle {
+  width: 38px !important;
+  height: 34px !important;
+  min-width: 38px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, .1) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  color: #fff !important;
+}
+
+.admin-theme-toggle:hover {
+  background: rgba(245, 196, 81, .16) !important;
+  border-color: rgba(245, 196, 81, .38) !important;
+  color: var(--admin-gold, #f5a623) !important;
+}
+
+.admin-nav-collapsed .admin-theme-toggle {
+  width: 34px !important;
+  height: 30px !important;
+  min-width: 34px !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell),
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-body,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-overview {
+  background: radial-gradient(circle at top left, rgba(139, 92, 246, .18), transparent 34%), var(--admin-bg) !important;
+  color: var(--admin-text) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dash-navbar {
+  background: linear-gradient(180deg, #170f33 0%, #211044 58%, #2a1558 100%) !important;
+  box-shadow: 8px 0 32px rgba(0, 0, 0, .36) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-section,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-panel,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-panel,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-stat-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-stat-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-insight-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .record-chart-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-section-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-box,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-prem-box,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-modal-box,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .confirm-box,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .notify-dialog,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .labsoft-card,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .labsoft-section,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .feedback-report-page {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+  box-shadow: var(--admin-shadow) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .section-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-prem-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .search-modal-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-section-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-panel-header,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-card-head {
+  background: linear-gradient(180deg, var(--admin-surface-2), var(--admin-surface)) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-toolbar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-toolbar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-toolbar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-tabs,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-filters-bar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-grid-legend,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-all-toolbar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dt-pagination,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .record-charts-wrap,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-search,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-announcement-list,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-compose,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-filter-bar,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .feedback-search,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .labsoft-toolbar {
+  background: var(--admin-surface-2) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) h1,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) h2,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) h3,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) h4,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .section-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-big-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-prem-title,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-hero h1,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-stat-card strong,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-stat-card strong {
+  color: var(--admin-text) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) p,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) small,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) label,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-subtitle,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-subtitle,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-subtitle,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-hero p,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-panel-header small,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-card p,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-stat-card small,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-empty,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-empty-state,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-empty-state,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dt-pagination {
+  color: var(--admin-muted) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) select,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) textarea,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .form-control,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .form-select,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sf-val,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-search-bar input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-search-wrap input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-search-wrap input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-search-wrap input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-filter-group input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-filter-group select,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dataTables_wrapper .dataTables_filter input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .mprem-fg input,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .mprem-fg select,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-compose textarea,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-search input {
+  background: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--admin-line-2) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) input::placeholder,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) textarea::placeholder {
+  color: #8f84a8 !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .admin-table,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table.dataTable {
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) thead th,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-table thead th,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-table thead th,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-table thead th,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-table thead th,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table.dataTable thead th {
+  background: var(--table-header-bg) !important;
+  color: #efe7ff !important;
+  border-color: rgba(139, 92, 246, .42) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) tbody tr,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-table tbody tr,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-table tbody tr,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-table tbody tr,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-table tbody tr,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table.dataTable tbody tr {
+  background: var(--table-row-bg) !important;
+  border-color: var(--admin-line) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) tbody tr:hover,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-table tbody tr:hover,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-table tbody tr:hover,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-table tbody tr:hover,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-table tbody tr:hover,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table.dataTable tbody tr:hover {
+  background: var(--table-row-hover) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) td,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-table tbody td,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-table tbody td,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-table tbody td,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-table tbody td,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) table.dataTable tbody td {
+  color: var(--admin-text) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-add-student,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-mprem-save,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-mconfirm,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-btn-checkin,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-primary-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-search-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-apply-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dt-page-btns button.active,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6) !important;
+  color: #fff !important;
+  border-color: rgba(167, 139, 250, .45) !important;
+  box-shadow: 0 12px 24px rgba(109, 40, 217, .28) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-reset-sessions,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-st-edit,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-st-delete,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-rec-delete,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-timeout-prem,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-mprem-cancel,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .btn-mclose,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-reset-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-btn-approve,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-btn-reject,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-reset-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-report-btn,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .dt-buttons .dt-button,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .feedback-export-btn {
+  background: var(--admin-surface-2) !important;
+  color: #efe7ff !important;
+  border-color: var(--admin-line-2) !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .students-count-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .records-count-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .sitin-active-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .nav-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .lab-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .year-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .overview-count-pill,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-section-badge,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-tab-badge {
+  background: rgba(245, 196, 81, .15) !important;
+  color: var(--admin-gold) !important;
+  border-color: rgba(245, 196, 81, .34) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) #admin-announce-list > div[style],
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .today-feedback-item,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-alert,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-student-row,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .analytics-snapshot-row,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .resv-pending-card {
+  background: var(--admin-surface-2) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-line) !important;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .modal-overlay,
+[data-theme="dark"] body.dashboard-body:not(.student-shell) .notify-overlay.show {
+  background: rgba(4, 3, 12, .76) !important;
+  backdrop-filter: blur(5px);
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) ::-webkit-scrollbar-track {
+  background: #111122;
+}
+
+[data-theme="dark"] body.dashboard-body:not(.student-shell) ::-webkit-scrollbar-thumb {
+  background: #6d5aa8;
+}
