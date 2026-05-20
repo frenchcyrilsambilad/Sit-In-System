@@ -132,7 +132,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $reservedPcs[(int)$r['pc_number']] = $r['status'];
         }
 
-        echo json_encode(['success' => true, 'reserved_pcs' => $reservedPcs, 'total_pcs' => 40]);
+        $blockStmt = $pdo->prepare("SELECT pc_number, reason FROM lab_pc_blocks WHERE lab = ? AND date = ? AND (time_slot = ? OR time_slot IS NULL OR time_slot = '')");
+        $blockStmt->execute([$lab, $date, $timeSlot]);
+        $blocks = $blockStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $labClosed = false;
+        $blockedPcs = [];
+        foreach ($blocks as $block) {
+            if ($block['pc_number'] === null || $block['pc_number'] === '') {
+                $labClosed = true;
+                break;
+            }
+            $blockedPcs[(int)$block['pc_number']] = 'Unavailable';
+        }
+
+        if ($labClosed) {
+            for ($i = 1; $i <= 40; $i++) {
+                if (!isset($reservedPcs[$i])) $blockedPcs[$i] = 'LabClosed';
+            }
+        }
+
+        echo json_encode([
+            'success' => true,
+            'reserved_pcs' => $reservedPcs,
+            'blocked_pcs' => $blockedPcs,
+            'lab_closed' => $labClosed,
+            'total_pcs' => 40
+        ]);
     }
     
     // ── Reserve a specific PC ──
@@ -171,6 +197,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pcCheck->execute([$lab, $date, $timeSlot, $pcNumber]);
         if ($pcCheck->fetch()) {
             echo json_encode(['success' => false, 'message' => 'This PC has already been reserved. Please select another.']);
+            exit;
+        }
+
+        $blockCheck = $pdo->prepare("SELECT pc_number FROM lab_pc_blocks WHERE lab = ? AND date = ? AND (time_slot = ? OR time_slot IS NULL OR time_slot = '') AND (pc_number IS NULL OR pc_number = ?) LIMIT 1");
+        $blockCheck->execute([$lab, $date, $timeSlot, $pcNumber]);
+        $blocked = $blockCheck->fetch();
+        if ($blocked) {
+            $message = ($blocked['pc_number'] === null || $blocked['pc_number'] === '')
+                ? 'This lab is closed for the selected schedule.'
+                : 'This PC is unavailable for the selected schedule.';
+            echo json_encode(['success' => false, 'message' => $message]);
             exit;
         }
 

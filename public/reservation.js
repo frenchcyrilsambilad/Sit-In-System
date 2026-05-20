@@ -6,6 +6,7 @@ let selectedLab      = '';
 let selectedTimeSlot = '';
 let selectedPC       = null;
 let reservedPcsMap   = {};
+let blockedPcsMap    = {};
 let pendingCancelId  = null;
 let autoRefreshTimer = null;
 
@@ -105,6 +106,8 @@ async function loadPCGrid() {
   const loading  = document.getElementById('grid-loading');
 
   if (!lab || !date || !timeSlot) {
+    reservedPcsMap = {};
+    blockedPcsMap = {};
     grid.innerHTML = `<div class="res-pc-placeholder"><i class="fa fa-desktop"></i><span>Select a lab, date, and time slot to view PCs</span></div>`;
     setGridStats(false);
     return;
@@ -123,8 +126,13 @@ async function loadPCGrid() {
 
     if (data.success) {
       reservedPcsMap = data.reserved_pcs || {};
+      blockedPcsMap = data.blocked_pcs || {};
+      if (selectedPC && (reservedPcsMap[selectedPC] || blockedPcsMap[selectedPC])) {
+        selectedPC = null;
+        updateSelectedPreview();
+      }
       renderPCGrid(data.total_pcs || 40);
-      updateGridStats(data.total_pcs || 40);
+      updateGridStats(data.total_pcs || 40, !!data.lab_closed);
     } else {
       grid.innerHTML = `<div class="res-pc-placeholder"><i class="fa fa-exclamation-triangle"></i><span>${data.message || 'Failed to load PCs'}</span></div>`;
       setGridStats(false);
@@ -144,12 +152,14 @@ function renderPCGrid(total) {
 
   for (let i = 1; i <= total; i++) {
     const status    = reservedPcsMap[i] || null;
+    const blockStatus = blockedPcsMap[i] || null;
     let cls         = 'available';
     let clickable   = true;
     let titleSuffix = 'Available';
 
     if (status === 'Reserved') { cls = 'reserved';  clickable = false; titleSuffix = 'Reserved'; }
     else if (status === 'Active') { cls = 'active-pc'; clickable = false; titleSuffix = 'Occupied (Active Sit-in)'; }
+    else if (blockStatus) { cls = 'blocked'; clickable = false; titleSuffix = blockStatus === 'LabClosed' ? 'Lab Closed' : 'Unavailable'; }
 
     if (selectedPC === i) { cls = 'selected'; clickable = true; }
 
@@ -166,18 +176,23 @@ function renderPCGrid(total) {
   grid.innerHTML = html;
 }
 
-function updateGridStats(total) {
+function updateGridStats(total, labClosed = false) {
   const statsWrap = document.getElementById('grid-stats');
   const sub       = document.getElementById('grid-subtitle');
   const reserved  = Object.values(reservedPcsMap).filter(v => v === 'Reserved').length;
   const active    = Object.values(reservedPcsMap).filter(v => v === 'Active').length;
-  const avail     = total - reserved - active;
+  const blocked   = Object.keys(blockedPcsMap || {}).length;
+  const avail     = Math.max(0, total - reserved - active - blocked);
 
   document.getElementById('stat-avail').textContent    = avail;
   document.getElementById('stat-reserved').textContent  = reserved;
   document.getElementById('stat-active').textContent    = active;
+  const blockedEl = document.getElementById('stat-blocked');
+  if (blockedEl) blockedEl.textContent = blocked;
   statsWrap.style.display = 'flex';
-  sub.textContent         = `Click a green PC to select it for your reservation`;
+  sub.textContent = labClosed
+    ? 'This lab is closed for the selected schedule'
+    : `Click a green PC to select it for your reservation`;
 }
 
 function setGridStats(show) {
@@ -188,6 +203,7 @@ function setGridStats(show) {
 // Select / deselect a PC
 function selectPC(num, el) {
   if (reservedPcsMap[num]) return; // double-guard
+  if (blockedPcsMap[num]) return;
 
   if (selectedPC === num) {
     // Deselect

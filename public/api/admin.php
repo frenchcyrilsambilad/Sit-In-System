@@ -41,6 +41,14 @@ function parse_session_datetime(?string $date, ?string $time): ?int {
     return $ts ?: null;
 }
 
+function block_time_scope_sql(string $timeSlot, array &$params): string {
+    if ($timeSlot !== '') {
+        $params[] = $timeSlot;
+        return " AND (time_slot = ? OR time_slot IS NULL OR time_slot = '')";
+    }
+    return "";
+}
+
 if ($action === 'get_announcements') {
     $stmt = $pdo->query("SELECT * FROM announcements ORDER BY id DESC");
     admin_json(['success' => true, 'announcements' => $stmt->fetchAll()]);
@@ -445,8 +453,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'purpose' => $pc['purpose']
             ];
         }
+
+        $blockParams = [$lab, $date];
+        $blockQuery = "SELECT pc_number, time_slot, reason FROM lab_pc_blocks WHERE lab = ? AND date = ?";
+        if ($timeSlot) {
+            $blockQuery .= " AND (time_slot = ? OR time_slot IS NULL OR time_slot = '')";
+            $blockParams[] = $timeSlot;
+        }
+        $blockStmt = $pdo->prepare($blockQuery);
+        $blockStmt->execute($blockParams);
+        $blocks = $blockStmt->fetchAll(PDO::FETCH_ASSOC);
+        $labClosed = false;
+        $blockedCount = 0;
+        foreach ($blocks as $block) {
+            if ($block['pc_number'] === null || $block['pc_number'] === '') {
+                $labClosed = true;
+                for ($i = 1; $i <= 40; $i++) {
+                    if (!isset($pcMap[$i])) {
+                        $pcMap[$i] = [
+                            'status' => 'LabClosed',
+                            'name' => '',
+                            'idNum' => '',
+                            'time_slot' => $block['time_slot'] ?: 'All Time Slots',
+                            'purpose' => $block['reason'] ?: 'Lab closed'
+                        ];
+                        $blockedCount++;
+                    }
+                }
+                continue;
+            }
+
+            $num = (int)$block['pc_number'];
+            if ($num >= 1 && $num <= 40 && !isset($pcMap[$num])) {
+                $pcMap[$num] = [
+                    'status' => 'Unavailable',
+                    'name' => '',
+                    'idNum' => '',
+                    'time_slot' => $block['time_slot'] ?: 'All Time Slots',
+                    'purpose' => $block['reason'] ?: 'PC unavailable'
+                ];
+                $blockedCount++;
+            }
+        }
         
-        echo json_encode(['success' => true, 'pcs' => $pcMap, 'total_pcs' => 40]);
+        echo json_encode(['success' => true, 'pcs' => $pcMap, 'total_pcs' => 40, 'lab_closed' => $labClosed, 'blocked_count' => $blockedCount]);
+    }
+
+    elseif ($action === 'set_lab_block') {
+        $lab = trim($input['lab'] ?? '');
+        $date = trim($input['date'] ?? '');
+        $timeSlot = trim($input['time_slot'] ?? '');
+        $closed = !empty($input['closed']);
+
+        if (!$lab || !$date) {
+            echo json_encode(['success' => false, 'message' => 'Missing lab or date.']);
+            exit;
+        }
+
+        if ($closed) {
+            $busyParams = [$lab, $date];
+            $busySql = "SELECT COUNT(*) FROM sitin_records WHERE lab = ? AND date = ? AND status IN ('Reserved','Active') AND deleted_at IS NULL";
+            if ($timeSlot) {
+                $busySql .= " AND time_slot = ?";
+                $busyParams[] = $timeSlot;
+            }
+            $busyStmt = $pdo->prepare($busySql);
+            $busyStmt->execute($busyParams);
+            if ((int)$busyStmt->fetchColumn() > 0) {
+                echo json_encode(['success' => false, 'message' => 'This lab already has reserved or active PCs for the selected schedule. Cancel or finish them first.']);
+                exit;
+            }
+
+            $deleteSql = "DELETE FROM lab_pc_blocks WHERE lab = ? AND date = ? AND pc_number IS NULL";
+            $deleteParams = [$lab, $date];
+            if ($timeSlot) {
+                $deleteSql .= " AND time_slot = ?";
+                $deleteParams[] = $timeSlot;
+            }
+            $pdo->prepare($deleteSql)->execute($deleteParams);
+            $stmt = $pdo->prepare("INSERT INTO lab_pc_blocks (lab, pc_number, date, time_slot, reason) VALUES (?, NULL, ?, ?, ?)");
+            $stmt->execute([$lab, $date, $timeSlot ?: null, 'Lab closed by admin']);
+            audit_log($pdo, 'close_lab_reservations', 'lab_pc_block', null, ['lab' => $lab, 'date' => $date, 'time_slot' => $timeSlot ?: 'All Time Slots']);
+            echo json_encode(['success' => true, 'message' => 'Lab closed for the selected schedule.']);
+            exit;
+        }
+
+        $deleteSql = "DELETE FROM lab_pc_blocks WHERE lab = ? AND date = ? AND pc_number IS NULL";
+        $deleteParams = [$lab, $date];
+        if ($timeSlot) {
+            $deleteSql .= " AND (time_slot = ? OR time_slot IS NULL OR time_slot = '')";
+            $deleteParams[] = $timeSlot;
+        }
+        $pdo->prepare($deleteSql)->execute($deleteParams);
+        audit_log($pdo, 'open_lab_reservations', 'lab_pc_block', null, ['lab' => $lab, 'date' => $date, 'time_slot' => $timeSlot ?: 'All Time Slots']);
+        echo json_encode(['success' => true, 'message' => 'Lab reopened for the selected schedule.']);
+    }
+
+    elseif ($action === 'set_pc_block') {
+        $lab = trim($input['lab'] ?? '');
+        $date = trim($input['date'] ?? '');
+        $timeSlot = trim($input['time_slot'] ?? '');
+        $pcNumber = (int)($input['pc_number'] ?? 0);
+        $blocked = !empty($input['blocked']);
+
+        if (!$lab || !$date || $pcNumber < 1 || $pcNumber > 40) {
+            echo json_encode(['success' => false, 'message' => 'Missing lab, date, or valid PC number.']);
+            exit;
+        }
+
+        if ($blocked) {
+            $busyParams = [$lab, $date, $pcNumber];
+            $busySql = "SELECT COUNT(*) FROM sitin_records WHERE lab = ? AND date = ? AND pc_number = ? AND status IN ('Reserved','Active') AND deleted_at IS NULL";
+            if ($timeSlot) {
+                $busySql .= " AND time_slot = ?";
+                $busyParams[] = $timeSlot;
+            }
+            $busyStmt = $pdo->prepare($busySql);
+            $busyStmt->execute($busyParams);
+            if ((int)$busyStmt->fetchColumn() > 0) {
+                echo json_encode(['success' => false, 'message' => 'This PC already has a reservation or active session for the selected schedule.']);
+                exit;
+            }
+
+            $deleteSql = "DELETE FROM lab_pc_blocks WHERE lab = ? AND date = ? AND pc_number = ?";
+            $deleteParams = [$lab, $date, $pcNumber];
+            if ($timeSlot) {
+                $deleteSql .= " AND time_slot = ?";
+                $deleteParams[] = $timeSlot;
+            }
+            $pdo->prepare($deleteSql)->execute($deleteParams);
+            $stmt = $pdo->prepare("INSERT INTO lab_pc_blocks (lab, pc_number, date, time_slot, reason) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$lab, $pcNumber, $date, $timeSlot ?: null, 'PC marked unavailable by admin']);
+            audit_log($pdo, 'mark_pc_unavailable', 'lab_pc_block', null, ['lab' => $lab, 'pc_number' => $pcNumber, 'date' => $date, 'time_slot' => $timeSlot ?: 'All Time Slots']);
+            echo json_encode(['success' => true, 'message' => "PC $pcNumber marked unavailable."]);
+            exit;
+        }
+
+        $deleteSql = "DELETE FROM lab_pc_blocks WHERE lab = ? AND date = ? AND pc_number = ?";
+        $deleteParams = [$lab, $date, $pcNumber];
+        if ($timeSlot) {
+            $deleteSql .= " AND (time_slot = ? OR time_slot IS NULL OR time_slot = '')";
+            $deleteParams[] = $timeSlot;
+        }
+        $pdo->prepare($deleteSql)->execute($deleteParams);
+        audit_log($pdo, 'mark_pc_available', 'lab_pc_block', null, ['lab' => $lab, 'pc_number' => $pcNumber, 'date' => $date, 'time_slot' => $timeSlot ?: 'All Time Slots']);
+        echo json_encode(['success' => true, 'message' => "PC $pcNumber is available again."]);
     }
 
     elseif ($action === 'get_audit_logs') {

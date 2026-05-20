@@ -785,7 +785,9 @@ async function renderStudents() {
   } catch (e) { console.error('Admin action failed', e); }
 }
 
-function resetAllSessions() { showNotify('Reset all sessions is not supported yet.', 'info'); }
+function resetAllSessions() {
+  resetSessions();
+}
 
 // â”€â”€ LEADERBOARD LOGIC â”€â”€
 async function loadAdminLeaderboard() {
@@ -2097,6 +2099,283 @@ function printFeedback() {
 let reportsTableInstance = null;
 let allReportsData = [];
 
+function getReportGeneratedDateTime() {
+  const now = new Date();
+  return now.toLocaleString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+}
+
+function reportExportOptions() {
+  return {
+    columns: [0, 1, 2, 3, 4, 5, 6],
+    stripHtml: true,
+    modifier: {
+      search: 'applied',
+      order: 'applied',
+      page: 'current'
+    }
+  };
+}
+
+function escapeReportHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getReportExportRows() {
+  if (!reportsTableInstance) return allReportsData.slice(0, 10);
+  return reportsTableInstance
+    .rows({ search: 'applied', order: 'applied', page: 'all' })
+    .data()
+    .toArray();
+}
+
+function formatReportLab(value) {
+  if (!value) return '';
+  const text = String(value);
+  return /^lab\s+/i.test(text) ? text : `Lab ${text}`;
+}
+
+function buildReportsPrintHtml() {
+  const generatedAt = getReportGeneratedDateTime();
+  const rows = getReportExportRows();
+  const bodyRows = rows.length
+    ? rows.map(row => `
+        <tr>
+          <td>${escapeReportHtml(row.idNum || '')}</td>
+          <td>${escapeReportHtml(row.name || '')}</td>
+          <td>${escapeReportHtml(row.purpose || '')}</td>
+          <td>${escapeReportHtml(formatReportLab(row.lab))}</td>
+          <td>${escapeReportHtml(row.login || '')}</td>
+          <td>${escapeReportHtml(row.logout || '')}</td>
+          <td>${escapeReportHtml(row.date || '')}</td>
+        </tr>
+      `).join('')
+    : '<tr><td class="empty-report-row" colspan="7">No reports found.</td></tr>';
+
+  return `
+    <!doctype html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <title>college-of-computer-studies-reference-report</title>
+    <style>
+      @page { size: A4 portrait; margin: 0; }
+      * { box-sizing: border-box; }
+      html,
+      body {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0;
+        background: #fff;
+        color: #2f3337;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 9.4px;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .report-page {
+        width: 210mm;
+        min-height: 297mm;
+        padding: 4.8mm 8mm 12mm;
+        background: #fff;
+      }
+      .generated-at {
+        color: #4b5563;
+        font-size: 8.5px;
+        line-height: 1;
+        margin: 0 0 8px;
+      }
+      .report-header {
+        text-align: center;
+        margin-bottom: 15px;
+      }
+      .system-name {
+        color: #3f4650;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.15;
+        margin-bottom: 7px;
+      }
+      .report-title {
+        color: #232323;
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 18px;
+        line-height: 1.1;
+        font-weight: 700;
+      }
+      .report-table-wrap {
+        width: 92%;
+        margin: 0 auto;
+        overflow: hidden;
+        border: 1px solid #e2e5e9;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 7px 16px rgba(17, 24, 39, 0.08);
+      }
+      table {
+        width: 100% !important;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 9px;
+      }
+      thead { display: table-header-group; }
+      tfoot { display: table-footer-group; }
+      tr { break-inside: avoid; page-break-inside: avoid; }
+      th:nth-child(1), td:nth-child(1) { width: 12%; }
+      th:nth-child(2), td:nth-child(2) { width: 22%; }
+      th:nth-child(3), td:nth-child(3) { width: 22%; }
+      th:nth-child(4), td:nth-child(4) { width: 14%; }
+      th:nth-child(5), td:nth-child(5) { width: 10%; }
+      th:nth-child(6), td:nth-child(6) { width: 10%; }
+      th:nth-child(7), td:nth-child(7) { width: 10%; }
+      th {
+        background: #f8f9fa !important;
+        color: #a4a9b0 !important;
+        font-weight: 600;
+        text-align: center;
+        padding: 6px 8px;
+        border-right: 0;
+        border-bottom: 1px solid #edf0f3;
+        line-height: 1.1;
+      }
+      td {
+        color: #2f3337;
+        padding: 5px 8px;
+        border-right: 0;
+        border-bottom: 1px solid #edf0f3;
+        vertical-align: middle;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+      td:nth-child(1),
+      td:nth-child(4),
+      td:nth-child(5),
+      td:nth-child(6),
+      td:nth-child(7) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      td:nth-child(1),
+      td:nth-child(4),
+      td:nth-child(5),
+      td:nth-child(6),
+      td:nth-child(7) { text-align: center; white-space: nowrap; }
+      td:nth-child(2),
+      td:nth-child(3) { text-align: left; }
+      td:last-child { border-right: 0; }
+      tbody tr:nth-child(even) td { background: #fcfcfd; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .empty-report-row {
+        height: 40px;
+        text-align: center !important;
+        color: #8c929b;
+      }
+      @media screen {
+        body {
+          background: #2b2b2b;
+        }
+        .report-page {
+          margin: 0 auto;
+        }
+      }
+    </style>
+    </head>
+    <body>
+    <main class="report-page">
+      <div class="generated-at">${generatedAt}</div>
+      <header class="report-header">
+        <div class="system-name">University of Cebu – Main Campus System</div>
+        <div class="report-title">College Of Computer Studies Reports</div>
+      </header>
+      <section class="report-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Number</th>
+              <th>Name</th>
+              <th>Purpose</th>
+              <th>Laboratory</th>
+              <th>Login</th>
+              <th>Logout</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>${bodyRows}</tbody>
+        </table>
+      </section>
+    </main>
+    </body>
+    </html>
+  `;
+}
+
+function openReportsPrintWindow() {
+  const win = window.open('', '_blank');
+  if (!win) {
+    showNotify('Allow pop-ups to generate the report PDF.', 'warning');
+    return;
+  }
+
+  win.document.open();
+  win.document.write(buildReportsPrintHtml());
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 250);
+}
+
+function generateReportsPdf() {
+  if (typeof html2pdf === 'undefined') {
+    showNotify('PDF generator is still loading. Please try again in a moment.', 'warning');
+    return;
+  }
+
+  const parsedReport = new DOMParser().parseFromString(buildReportsPrintHtml(), 'text/html');
+  const reportHost = document.createElement('div');
+  reportHost.style.position = 'fixed';
+  reportHost.style.left = '-9999px';
+  reportHost.style.top = '0';
+  reportHost.style.width = '210mm';
+  reportHost.style.background = '#ffffff';
+  reportHost.appendChild(parsedReport.querySelector('style').cloneNode(true));
+  reportHost.appendChild(parsedReport.querySelector('.report-page').cloneNode(true));
+  document.body.appendChild(reportHost);
+
+  html2pdf()
+    .set({
+      margin: 0,
+      filename: 'college-of-computer-studies-reference-report.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      },
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+      },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    })
+    .from(reportHost.querySelector('.report-page'))
+    .save()
+    .finally(() => {
+      reportHost.remove();
+    });
+}
+
 async function renderReports() {
   try {
     const res = await fetch('api/admin.php?action=get_records', { method: 'POST' });
@@ -2124,8 +2403,16 @@ function updateReportsTable(records) {
     buttons: [
       { extend: 'csv', className: 'dt-btn-csv', text: '<i class="fa fa-file-csv" style="margin-right:5px;"></i> CSV' },
       { extend: 'excel', className: 'dt-btn-excel', text: '<i class="fa fa-file-excel" style="margin-right:5px;"></i> Excel' },
-      { extend: 'pdf', className: 'dt-btn-pdf', text: '<i class="fa fa-file-pdf" style="margin-right:5px;"></i> PDF' },
-      { extend: 'print', className: 'dt-btn-print', text: '<i class="fa fa-print" style="margin-right:5px;"></i> Print' }
+      {
+        text: '<i class="fa fa-file-pdf" style="margin-right:5px;"></i> PDF',
+        className: 'dt-btn-pdf',
+        action: generateReportsPdf
+      },
+      {
+        text: '<i class="fa fa-print" style="margin-right:5px;"></i> Print',
+        className: 'dt-btn-print',
+        action: openReportsPrintWindow
+      }
     ],
     language: {
       search: "Filter: ",
@@ -2192,6 +2479,7 @@ let resvPage = 1, logPage = 1;
 let allReservations = [], allLogData = [];
 let resvSystemOpen = true;
 let pendingCheckinReservationId = null;
+let adminLabClosed = false;
 
 function initReservationTab() {
   const dateEl = document.getElementById('admin-resv-date');
@@ -2262,6 +2550,8 @@ async function loadAdminPCGrid() {
     });
     const data = await res.json();
     if (data.success) {
+      adminLabClosed = !!data.lab_closed;
+      updateAdminLabCloseButton();
       renderAdminPCGrid(data.pcs || {}, data.total_pcs || 40);
     } else {
       grid.innerHTML = '<div class="resv-pc-placeholder"><i class="fa fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i><span>' + (data.message || 'Failed') + '</span></div>';
@@ -2273,21 +2563,29 @@ async function loadAdminPCGrid() {
 
 function renderAdminPCGrid(pcMap, total) {
   const grid = document.getElementById('admin-pc-grid');
-  let html = '', avail = 0, reserved = 0, active = 0;
+  let html = '', avail = 0, reserved = 0, active = 0, blocked = 0;
   for (let i = 1; i <= total; i++) {
     const info = pcMap[i] || null;
     let cls = 'available', occupant = '';
     if (info) {
       if (info.status === 'Reserved') { cls = 'reserved'; reserved++; occupant = info.name || info.idNum || ''; }
       else if (info.status === 'Active') { cls = 'active-pc'; active++; occupant = info.name || info.idNum || ''; }
+      else if (info.status === 'Unavailable' || info.status === 'LabClosed') { cls = 'blocked'; blocked++; }
     } else { avail++; }
     const occHtml = occupant ? `<span class="pc-occupant" title="${occupant}">${occupant.split(' ')[0]}</span>` : '';
-    const clickAction = info ? `onclick="showPCDetail(${i}, '${cls}', ${JSON.stringify(info).replace(/'/g, "\\'")})"` : '';
+    const detailAction = info ? `showPCDetail(${i}, '${cls}', ${JSON.stringify(info).replace(/'/g, "\\'")})` : '';
+    const clickAction = cls === 'available'
+      ? `onclick="toggleAdminPCBlocked(${i}, true)"`
+      : cls === 'blocked' && info?.status === 'Unavailable'
+        ? `onclick="toggleAdminPCBlocked(${i}, false)"`
+        : cls === 'blocked'
+          ? `onclick="showNotify('Open the lab first before changing individual PCs.', 'warning')"`
+          : `onclick="${detailAction}"`;
     
     let titleSuffix = 'Available';
     if (cls === 'reserved') titleSuffix = 'Reserved';
     if (cls === 'active-pc') titleSuffix = 'Active';
-    if (cls === 'blocked') titleSuffix = 'Blocked';
+    if (cls === 'blocked') titleSuffix = info?.status === 'LabClosed' ? 'Lab Closed' : 'Unavailable';
 
     html += `<div class="resv-pc-cell ${cls}" ${clickAction} title="PC ${i}${occupant ? ' â€” ' + occupant : ''}">
       <i class="fa fa-desktop"></i>
@@ -2300,6 +2598,69 @@ function renderAdminPCGrid(pcMap, total) {
   document.getElementById('admin-avail-count').textContent = avail;
   document.getElementById('admin-reserved-count').textContent = reserved;
   document.getElementById('admin-active-count').textContent = active;
+  const blockedEl = document.getElementById('admin-blocked-count');
+  if (blockedEl) blockedEl.textContent = blocked;
+}
+
+function updateAdminLabCloseButton() {
+  const btn = document.getElementById('admin-lab-close-btn');
+  if (!btn) return;
+  btn.innerHTML = adminLabClosed
+    ? '<i class="fa fa-lock-open"></i> Open Lab'
+    : '<i class="fa fa-lock"></i> Close Selected Lab';
+  btn.style.background = adminLabClosed ? '#dcfce7' : '#f5a623';
+  btn.style.color = adminLabClosed ? '#14532d' : '#270747';
+}
+
+async function toggleAdminLabClosed() {
+  const date = document.getElementById('admin-resv-date')?.value || '';
+  const timeSlot = document.getElementById('admin-resv-timeslot')?.value || '';
+  if (!date) { showNotify('Please select a date first.', 'warning'); return; }
+  const closing = !adminLabClosed;
+  const scope = timeSlot || 'all time slots';
+  if (closing && !confirm(`Close Lab ${adminSelectedLab} on ${date} for ${scope}? Students will not be able to reserve any PC.`)) return;
+
+  try {
+    const res = await fetch('api/admin.php?action=set_lab_block', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lab: adminSelectedLab, date, time_slot: timeSlot, closed: closing })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showNotify(data.message, closing ? 'warning' : 'success');
+      loadAdminPCGrid();
+    } else {
+      showNotify(data.message || 'Failed to update lab availability.', 'error');
+    }
+  } catch (e) {
+    showNotify('Connection error.', 'error');
+  }
+}
+
+async function toggleAdminPCBlocked(pcNumber, blocked) {
+  const date = document.getElementById('admin-resv-date')?.value || '';
+  const timeSlot = document.getElementById('admin-resv-timeslot')?.value || '';
+  if (!date) { showNotify('Please select a date first.', 'warning'); return; }
+  const scope = timeSlot || 'all time slots';
+  if (blocked && !confirm(`Mark PC ${pcNumber} in Lab ${adminSelectedLab} unavailable on ${date} for ${scope}?`)) return;
+
+  try {
+    const res = await fetch('api/admin.php?action=set_pc_block', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lab: adminSelectedLab, date, time_slot: timeSlot, pc_number: pcNumber, blocked })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showNotify(data.message, blocked ? 'warning' : 'success');
+      loadAdminPCGrid();
+    } else {
+      showNotify(data.message || 'Failed to update PC availability.', 'error');
+    }
+  } catch (e) {
+    showNotify('Connection error.', 'error');
+  }
 }
 
 function showPCDetail(pcNum, status, info) {
@@ -3663,7 +4024,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const sections = ['home', 'students', 'sitin', 'records', 'reports', 'feedback', 'reservation', 'labsoftware', 'leaderboard', 'analytics', 'rewards'];
   await Promise.all(sections.map(async (name) => {
     try {
-      const res = await fetch(`admin_dashboard_${name}.html?v=48`);
+      const res = await fetch(`admin_dashboard_${name}.html?v=50`);
       if (res.ok) {
         document.getElementById(`section-${name}`).innerHTML = await res.text();
       }

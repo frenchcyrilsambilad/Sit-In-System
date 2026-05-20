@@ -93,6 +93,20 @@ try {
         echo "Column 'time_slot' already exists (skipped).<br>";
     }
 
+    // 8c. Create admin lab/PC block table for reservation availability
+    $pdo->exec("CREATE TABLE IF NOT EXISTS lab_pc_blocks (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        lab VARCHAR(50) NOT NULL,
+        pc_number INT DEFAULT NULL,
+        date VARCHAR(20) NOT NULL,
+        time_slot VARCHAR(30) DEFAULT NULL,
+        reason VARCHAR(255) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY uniq_lab_pc_block (lab, date, time_slot, pc_number),
+        KEY idx_lab_pc_blocks_lookup (lab, date, time_slot)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    echo "Table 'lab_pc_blocks' created.<br>";
+
     // 9. Add points column to users (migration for leaderboard)
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN points INT DEFAULT 0");

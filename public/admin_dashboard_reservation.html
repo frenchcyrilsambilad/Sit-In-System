@@ -33,11 +33,12 @@
         #admin-pc-grid .resv-pc-cell.available   .pc-status-text { color: #34d399 !important; }
         #admin-pc-grid .resv-pc-cell.reserved    .pc-status-text { color: #fbbf24 !important; }
         #admin-pc-grid .resv-pc-cell.active-pc   .pc-status-text { color: #60a5fa !important; }
-        #admin-pc-grid .resv-pc-cell.blocked     .pc-status-text { color: rgba(255,255,255,0.22) !important; }
+        #admin-pc-grid .resv-pc-cell.blocked     .pc-status-text { color: #f87171 !important; }
         /* Brighter icon colors per state */
         #admin-pc-grid .resv-pc-cell.available   i { color: #34d399 !important; }
         #admin-pc-grid .resv-pc-cell.reserved    i { color: #fbbf24 !important; }
         #admin-pc-grid .resv-pc-cell.active-pc   i { color: #60a5fa !important; }
+        #admin-pc-grid .resv-pc-cell.blocked     i { color: #f87171 !important; }
         @media (max-width: 900px) {
           #admin-pc-grid { grid-template-columns: repeat(5, 1fr) !important; }
         }
@@ -364,9 +365,13 @@
                       <option value="5:00 PM - 6:00 PM">5:00 PM - 6:00 PM</option>
                     </select>
                   </div>
+
+                  <button type="button" id="admin-lab-close-btn" onclick="toggleAdminLabClosed()" style="min-height:46px;border:0;border-radius:9px;background:#f5a623;color:#270747;font-size:0.86rem;font-weight:950;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 22px rgba(245,166,35,0.22);">
+                    <i class="fa fa-lock"></i> Close Selected Lab
+                  </button>
                   
                   <div style="padding: 1rem; background: #f0ebff; border-radius: 8px; border-left: 3px solid #7c3aed; margin-top: 0.5rem;">
-                     <div style="font-size: 0.75rem; color: #4a1d8f; font-weight: 700;"><i class="fa fa-info-circle" style="color: #7c3aed;"></i> Select lab and time slot to view live PC availability for admin controls.</div>
+                     <div style="font-size: 0.75rem; color: #4a1d8f; font-weight: 700;"><i class="fa fa-info-circle" style="color: #7c3aed;"></i> Select lab/date/time, close a lab, or click an available PC to mark it unavailable.</div>
                   </div>
                 </div>
               </div>
@@ -382,6 +387,7 @@
                     <span class="resv-legend-chip selected"><span class="resv-ldot"></span> Selected</span>
                     <span class="resv-legend-chip reserved"><span class="resv-ldot"></span> Reserved</span>
                     <span class="resv-legend-chip active"><span class="resv-ldot"></span> Active</span>
+                    <span class="resv-legend-chip blocked"><span class="resv-ldot"></span> Unavailable</span>
                   </div>
 
                   <!-- PC Grid Area -->
@@ -398,6 +404,7 @@
                         <span class="resv-stat-chip green"><i class="fa fa-check-circle"></i> <span id="admin-avail-count">0</span> Available</span>
                         <span class="resv-stat-chip yellow"><i class="fa fa-clock"></i> <span id="admin-reserved-count">0</span> Reserved</span>
                         <span class="resv-stat-chip blue"><i class="fa fa-bolt"></i> <span id="admin-active-count">0</span> Active</span>
+                        <span class="resv-stat-chip red"><i class="fa fa-ban"></i> <span id="admin-blocked-count">0</span> Unavailable</span>
                       </div>
                     </div>
                     <div class="resv-pc-grid" id="admin-pc-grid">

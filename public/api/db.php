@@ -53,6 +53,20 @@ try {
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8
         ");
 
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS lab_pc_blocks (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                lab VARCHAR(50) NOT NULL,
+                pc_number INT DEFAULT NULL,
+                date VARCHAR(20) NOT NULL,
+                time_slot VARCHAR(30) DEFAULT NULL,
+                reason VARCHAR(255) DEFAULT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY uniq_lab_pc_block (lab, date, time_slot, pc_number),
+                KEY idx_lab_pc_blocks_lookup (lab, date, time_slot)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+        ");
+
         ensure_index($pdo, 'sitin_records', 'idx_sitin_status', 'CREATE INDEX idx_sitin_status ON sitin_records (status)');
         ensure_index($pdo, 'sitin_records', 'idx_sitin_date', 'CREATE INDEX idx_sitin_date ON sitin_records (date)');
         ensure_index($pdo, 'sitin_records', 'idx_sitin_lab', 'CREATE INDEX idx_sitin_lab ON sitin_records (lab)');
